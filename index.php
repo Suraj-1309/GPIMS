@@ -67,12 +67,12 @@ if (isset($_SESSION['popup_message'])) {
 
     /* Hero Section */
     .hero-section {
-      background: url('hero-image.jpg') no-repeat center center/cover;
+      background: url('images/image-copy.webp') no-repeat center center/cover;
       color: #fff;
       padding: 100px 20px;
       position: relative;
       text-align: center;
-      background: url('images/image-copy.png') no-repeat center center/cover;
+      background: url('images/image-copy.webp') no-repeat center center/cover;
       font-weight: 900;
     }
 
@@ -234,7 +234,7 @@ if (isset($_SESSION['popup_message'])) {
         <div class="d-flex align-items-center" id="logoImg" style="white-space: nowrap;">
           <a href="/" title="Home" rel="home" class="d-flex align-items-center text-decoration-none"
             style="white-space: nowrap;">
-            <img src="images/image.png" alt="Home" style="height: 50px; width: auto;">
+            <img src="images/image.webp" alt="Home" style="height: 50px; width: auto;" loading="lazy">
             <span class="ms-2 fw-bold fs-5" style="white-space: nowrap;">
               <h5 style="color: black; margin: 0;">| GPD <span id="vanish" class="d-none d-md-inline">Inventory
                   Management System</span></h5>
@@ -390,10 +390,10 @@ document.addEventListener('DOMContentLoaded', function() {
   let logginFlag = false;
 
   // Minified HTML content for user login form
-  let loginHTML = `<div class="card" style="border-radius:0;width:100%;"><div class="card-body p-4"><div class="pb-4 text-center"><img src="image.png" alt="college_logo" style="width:35%;height:auto;"></div><h3 class="text-uppercase text-center mb-4">Login to Inventory</h3><form action="index.php" method="POST"><div class="form-group"><input type="password" name="password" class="form-control form-control-lg" maxlength="15" placeholder="Password"></div><input type="hidden" name="loginType" value="user"><div class="d-flex justify-content-center"><button type="submit" class="btn btn-lg btn-primary myhover">Login</button></div><div class="text-right mt-2" id="loginadmin"><a href="#">Login as admin</a></div><p class="text-center text-muted mt-3">If you don’t have an account or can’t log in, please contact the admin.</p></form></div></div>`;
+  let loginHTML = `<div class="card" style="border-radius:0;width:100%;"><div class="card-body p-4"><div class="pb-4 text-center"><img src="images/image.webp" loading="lazy" alt="college_logo" style="width:35%;height:auto;"></div><h3 class="text-uppercase text-center mb-4">Login to Inventory</h3><form action="index.php" method="POST"><div class="form-group"><input type="password" name="password" class="form-control form-control-lg" maxlength="15" placeholder="Password"></div><input type="hidden" name="loginType" value="user"><div class="d-flex justify-content-center"><button type="submit" class="btn btn-lg btn-primary myhover">Login</button></div><div class="text-right mt-2" id="loginadmin"><a href="#">Login as admin</a></div><p class="text-center text-muted mt-3">If you don’t have an account or can’t log in, please contact the admin.</p></form></div></div>`;
 
   // Minified HTML content for admin login form
-  let adminLoginHTML = `<div class="card" style="border-radius:0;width:100%;"><div class="card-body p-4"><div class="pb-4 text-center"><img src="image.png" alt="college_logo" style="width:35%;height:auto;"></div><h3 class="text-uppercase text-center mb-4">Logging In As Admin</h3><form action="index.php" method="POST"><div class="form-group"><input type="password" name="password" class="form-control form-control-lg" maxlength="15" placeholder="Password"></div><input type="hidden" name="loginType" value="admin"><div class="d-flex justify-content-center"><button type="submit" class="btn btn-lg btn-primary myhover">Login</button></div><div class="text-right mt-2" id="loginuser"><a href="#">Login as User</a></div></form></div></div>`;
+  let adminLoginHTML = `<div class="card" style="border-radius:0;width:100%;"><div class="card-body p-4"><div class="pb-4 text-center"><img src="images/image.webp" loading="lazy" alt="college_logo" style="width:35%;height:auto;"></div><h3 class="text-uppercase text-center mb-4">Logging In As Admin</h3><form action="index.php" method="POST"><div class="form-group"><input type="password" name="password" class="form-control form-control-lg" maxlength="15" placeholder="Password"></div><input type="hidden" name="loginType" value="admin"><div class="d-flex justify-content-center"><button type="submit" class="btn btn-lg btn-primary myhover">Login</button></div><div class="text-right mt-2" id="loginuser"><a href="#">Login as User</a></div></form></div></div>`;
 
   // Attach event for toggling to admin login form
   function attachAdminLoginEvent() {
