@@ -1,0 +1,64 @@
+body {
+    display: flex;
+    flex-direction: column;
+    /* Arrange navbar and content vertically */
+    margin: 0;
+    /* Remove default margin */
+  }
+  
+  .navbar {
+    width: 100vw;
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 1000;
+    /* Ensure the navbar is above other content */
+  }
+  
+  .main-container {
+    display: flex;
+    width: 100vw;
+    /* Ensure the main container takes full width */
+    margin-top: 56px;
+    /* Adjust according to the navbar height */
+  }
+  
+  .sidebar {
+    width: 250px;
+    height: calc(100vh - 56px);
+    background-color: #f8f9fa;
+    padding: 15px;
+    flex-shrink: 0;
+    position: fixed;
+    top: 56px;
+    left: 0;
+  }
+  
+  .content {
+    flex-grow: 1;
+    padding: 15px;
+    margin-left: 250px;
+    /* Adjust according to the sidebar width */
+    margin-top: 56px;
+    /* Adjust according to the navbar height */
+    /* Ensure the content takes the remaining width */
+  }
+  
+  .bottom-links {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    margin-top: auto;
+    padding: 15px;
+  
+  }
+  
+  .right{
+    margin-left: 250px;
+    position: relative; /* Change to relative for normal flow */
+    top: 56px; /* Adjust based on your layout */
+    padding: 20px;
+  }
+
+  
