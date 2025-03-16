@@ -38,7 +38,7 @@ if (isset($_SESSION['popup_message'])) {
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Admin Login Page</title>
+  <title>GPIMS</title>
   <!-- Bootstrap CSS -->
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
   <!-- Font Awesome -->
@@ -188,28 +188,70 @@ if (isset($_SESSION['popup_message'])) {
       }
     }
 /* For mobile devices */
+#loginModel{
+  width: auto;
+  height: auto;
+}
+
 #loginModal .modal-dialog {
-  max-width: 90%;
   margin: auto;
   display: flex;
   align-items: center;
-  min-height: calc(100vh - 3rem); /* A bit less than 100vh to account for browser chrome */
+  min-height: calc(80vh - 2rem); /* A bit less than 100vh to account for browser chrome */
 }
 
- /* For mobile devices: Ensure modal width does not exceed 100% */
- @media (max-width: 767px) {
 
-    #loginModal .modal-dialog {
-      width: 70%;
-      margin-left: 5%;
-      box-sizing: border-box;
-    }
-
-    #loginModal .modal-content {
-      width: 100%;
-      box-sizing: border-box;
-    }
+@media (max-width: 767px) {
+  .custom-modal {
+    padding: 0%;
+    margin: 0%;
+    height: 30%;
+    width: 80% !important; 
+    display: grid;
+    justify-content: center;
+    align-items: center;   /* Use 90% of the viewport width */
+    max-width: 250px;          /* Maximum width set to 300px */
+    height: auto;              /* Let content define the height, or adjust as needed */
+    margin: auto;
+    right: 13%;       
   }
+
+  h3{
+    font-size: small;
+  }
+  
+  p{
+    font-size: small;
+  }
+
+  button.btn {
+    font-size: small;
+    padding: 0.3rem 0.5rem;
+    height: auto;  /* Adjust or set a fixed height if needed */
+    width: auto;   /* You can also set a fixed width, e.g., width: 100px; */
+  }
+  
+  a{
+    font-size: small;
+  }
+  /* Make inputs smaller */
+  input.form-control {
+    font-size: small;
+    padding: 0.3rem;
+    height: auto;  /* You can also set a fixed height, e.g., height: 30px; */
+    width: 100%;
+  }
+
+
+  #loginModal .modal-content {
+    width: 100%;               /* Make the modal-content fill the dialog width */
+    height: auto;    
+    padding : 0;
+    margin: 0;          /* Let the modal content height adjust automatically */
+  }
+}
+
+
   
   /* For larger devices */
   @media (min-width: 768px) {
@@ -261,10 +303,9 @@ if (isset($_SESSION['popup_message'])) {
     </nav>
   </div>
 
-
 <!-- Login Modal -->
 <div class="modal fade" id="loginModal" tabindex="-1" role="dialog" aria-hidden="true" style="padding: 0; margin: 0;">
-  <div class="modal-dialog modal-dialog-centered" role="document">
+  <div class="modal-dialog modal-dialog-centered custom-modal" role="document">
     <div class="modal-content" style="border-radius: 0;">
       <div class="modal-body" id="loginModalBody">
         <!-- Login form content will be injected here -->
@@ -388,12 +429,46 @@ if (isset($_SESSION['popup_message'])) {
   <script>
 document.addEventListener('DOMContentLoaded', function() {
   let logginFlag = false;
+// Minified HTML content for user login form
+let loginHTML = `<div class="card mx-auto" style="border-radius:0; width:100%;">
+  <div class="card-body p-4">
+    <div class="pb-4 text-center">
+      <img src="images/image.webp" loading="lazy" alt="college_logo" style="width:35%;height:auto;">
+    </div>
+    <h3 class="text-uppercase text-center mb-4">Login to Inventory</h3>
+    <form action="index.php" method="POST">
+      <div class="form-group">
+        <input type="password" name="password" class="form-control form-control-lg" maxlength="15" placeholder="Password">
+      </div>
+      <input type="hidden" name="loginType" value="user">
+      <div class="d-flex justify-content-center">
+        <button type="submit" class="btn btn-lg btn-primary myhover">Login</button>
+      </div>
+      <div class="text-right mt-2" id="loginadmin"><a href="#">Login as admin</a></div>
+      <p class="text-center text-muted mt-3">If you don’t have an account or can’t log in, please contact the admin.</p>
+    </form>
+  </div>
+</div>`;
 
-  // Minified HTML content for user login form
-  let loginHTML = `<div class="card" style="border-radius:0;width:100%;"><div class="card-body p-4"><div class="pb-4 text-center"><img src="images/image.webp" loading="lazy" alt="college_logo" style="width:35%;height:auto;"></div><h3 class="text-uppercase text-center mb-4">Login to Inventory</h3><form action="index.php" method="POST"><div class="form-group"><input type="password" name="password" class="form-control form-control-lg" maxlength="15" placeholder="Password"></div><input type="hidden" name="loginType" value="user"><div class="d-flex justify-content-center"><button type="submit" class="btn btn-lg btn-primary myhover">Login</button></div><div class="text-right mt-2" id="loginadmin"><a href="#">Login as admin</a></div><p class="text-center text-muted mt-3">If you don’t have an account or can’t log in, please contact the admin.</p></form></div></div>`;
-
-  // Minified HTML content for admin login form
-  let adminLoginHTML = `<div class="card" style="border-radius:0;width:100%;"><div class="card-body p-4"><div class="pb-4 text-center"><img src="images/image.webp" loading="lazy" alt="college_logo" style="width:35%;height:auto;"></div><h3 class="text-uppercase text-center mb-4">Logging In As Admin</h3><form action="index.php" method="POST"><div class="form-group"><input type="password" name="password" class="form-control form-control-lg" maxlength="15" placeholder="Password"></div><input type="hidden" name="loginType" value="admin"><div class="d-flex justify-content-center"><button type="submit" class="btn btn-lg btn-primary myhover">Login</button></div><div class="text-right mt-2" id="loginuser"><a href="#">Login as User</a></div></form></div></div>`;
+// Minified HTML content for admin login form
+let adminLoginHTML = `<div class="card mx-auto" style="border-radius:0; width:100%;">
+  <div class="card-body p-4">
+    <div class="pb-4 text-center">
+      <img src="images/image.webp" loading="lazy" alt="college_logo" style="width:35%;height:auto;">
+    </div>
+    <h3 class="text-uppercase text-center mb-4">Logging In As Admin</h3>
+    <form action="index.php" method="POST">
+      <div class="form-group">
+        <input type="password" name="password" class="form-control form-control-lg" maxlength="15" placeholder="Password">
+      </div>
+      <input type="hidden" name="loginType" value="admin">
+      <div class="d-flex justify-content-center">
+        <button type="submit" class="btn btn-lg btn-primary myhover">Login</button>
+      </div>
+      <div class="text-right mt-2" id="loginuser"><a href="#">Login as User</a></div>
+    </form>
+  </div>
+</div>`;
 
   // Attach event for toggling to admin login form
   function attachAdminLoginEvent() {
