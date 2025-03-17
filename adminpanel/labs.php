@@ -86,24 +86,54 @@ $name = $_SESSION['name'];
 
 
 
-        // to edit a user 
+        
         if ($_SERVER['REQUEST_METHOD'] == "POST") {
-                $branch = $_POST["branch"] ?? '';
-                $lab = $_POST["lab"] ?? '';
-
-                // Insert query
-                $sql = "INSERT INTO `all_labs` (`branch_name`,`lab_name`) VALUES ('$branch','$lab')";
-                $result = mysqli_query($conn, $sql);
-
-                if ($result) {
-                    $_SESSION['message'] = "New Lab added To Inventory successfully.";
+            // Retrieve and trim input values
+            $branch = trim($_POST["branch"] ?? '');
+            $lab    = trim($_POST["lab"] ?? '');
+        
+            // Check if the lab with the same branch already exists
+            $stmtCheck = mysqli_prepare($conn, "SELECT COUNT(*) FROM `all_labs` WHERE `branch_name` = ? AND `lab_name` = ?");
+            if ($stmtCheck) {
+                mysqli_stmt_bind_param($stmtCheck, "ss", $branch, $lab);
+                mysqli_stmt_execute($stmtCheck);
+                mysqli_stmt_bind_result($stmtCheck, $count);
+                mysqli_stmt_fetch($stmtCheck);
+                mysqli_stmt_close($stmtCheck);
+        
+                if ($count > 0) {
+                    $_SESSION['message'] = "This lab and branch already exists in the database.";
+                    $_SESSION['message_type'] = "danger";
+                    header("Location: " . $_SERVER['PHP_SELF']);
+                    exit();
+                }
+            } else {
+                $_SESSION['message'] = "Database error during duplication check.";
+                $_SESSION['message_type'] = "danger";
+                header("Location: " . $_SERVER['PHP_SELF']);
+                exit();
+            }
+        
+            // Insert the new lab record as the combination does not exist
+            $stmtInsert = mysqli_prepare($conn, "INSERT INTO `all_labs` (`branch_name`, `lab_name`) VALUES (?, ?)");
+            if ($stmtInsert) {
+                mysqli_stmt_bind_param($stmtInsert, "ss", $branch, $lab);
+                mysqli_stmt_execute($stmtInsert);
+        
+                if (mysqli_stmt_affected_rows($stmtInsert) > 0) {
+                    $_SESSION['message'] = "New Lab added to Inventory successfully.";
                     $_SESSION['message_type'] = "success";
                 } else {
                     $_SESSION['message'] = "Failed to add new Lab due to an internal issue.";
                     $_SESSION['message_type'] = "danger";
                 }
-                header("Location: " . $_SERVER['PHP_SELF']);
-                exit();
+                mysqli_stmt_close($stmtInsert);
+            } else {
+                $_SESSION['message'] = "Database error during insertion.";
+                $_SESSION['message_type'] = "danger";
+            }
+            header("Location: " . $_SERVER['PHP_SELF']);
+            exit();
         }
         ?>
 
@@ -202,8 +232,14 @@ $name = $_SESSION['name'];
     <script src="//cdn.datatables.net/2.2.2/js/dataTables.min.js"></script>
     <script>
         $(document).ready(function () {
-            $('#myTable').DataTable();
+            var dtOptions = {};
+            // Check if the viewport width is 767px or less (mobile)
+            if ($(window).width() <= 767) {
+                dtOptions.lengthChange = false;
+            }
 
+            // Initialize DataTable with the options
+            $('#myTable').DataTable(dtOptions);
         });
     </script>
 </body>

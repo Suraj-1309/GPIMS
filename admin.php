@@ -195,7 +195,7 @@ $name = $_SESSION['name'];
                 <a class="nav-link hover-class" href="adminpanel/adminuser.php">Admins</a>
               </li>
               <li class="nav-item">
-                <a class="nav-link hover-class" href="adminpanel/inventory_officer.php">Stock Officers</a>
+                <a class="nav-link hover-class" href="adminpanel/inventory_officer.php">Inventory Officers</a>
               </li>
               <li class="nav-item">
                 <a class="nav-link hover-class" href="adminpanel/inventory_incharges.php">Inventory Incharges</a>
@@ -237,7 +237,7 @@ $name = $_SESSION['name'];
                     <a class="nav-link hover-class" href="adminpanel/return_request.php">Return Requests</a>
                 </li>
         <li class="nav-item bg-col">
-          <a class="nav-link hover-class" href="#option2" onclick="showContent('option2')">Labs</a>
+          <a class="nav-link hover-class" href="adminpanel/labs.php" onclick="showContent('option2')">Labs</a>
         </li>
       </ul>
     </div>
