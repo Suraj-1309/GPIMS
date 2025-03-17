@@ -31,9 +31,9 @@ $name = $_SESSION['name'];
 
 
     <div class="container" id="successMessage" style="">
-    
+
     </div>
-    
+
 
 
     <?php
@@ -46,92 +46,152 @@ $name = $_SESSION['name'];
 
     <div id="admin" class="right">
 
-    <?php
-    if (isset($_SESSION['message'])) {
-        echo '<div class="alert alert-' . $_SESSION['message_type'] . ' alert-dismissible fade show" role="alert">
+        <?php
+        if (isset($_SESSION['message'])) {
+            echo '<div class="alert alert-' . $_SESSION['message_type'] . ' alert-dismissible fade show" role="alert">
             <strong>Success!</strong> ' . $_SESSION['message'] . '
             <button type="button" class="close" data-dismiss="alert" aria-label="Close">
                 <span aria-hidden="true">&times;</span>
             </button>
           </div>';
-        unset($_SESSION['message']);
-        unset($_SESSION['message_type']);
-    }
-    ?>
-    <script>
-        document.addEventListener("DOMContentLoaded", function () {
-            setTimeout(() => {
-                let alert = document.querySelector(".alert");
-                if (alert) {
-                    alert.style.display = "none";
-                }
-            }, 1500);
-        });
-    </script>
+            unset($_SESSION['message']);
+            unset($_SESSION['message_type']);
+        }
+        ?>
+        <script>
+            document.addEventListener("DOMContentLoaded", function () {
+                setTimeout(() => {
+                    let alert = document.querySelector(".alert");
+                    if (alert) {
+                        alert.style.display = "none";
+                    }
+                }, 1500);
+            });
+        </script>
 
-        <!-- logic to add new admin -->
+
         <?php
         include "../_dbconnect.php";
-        // to delete a user
+
+        // Delete admin if 'delete' parameter is set in GET
         if (isset($_GET['delete'])) {
-            $password = $_GET['delete'];
-            $sql = "DELETE FROM `admin_login` WHERE `password` = '$password';";
-            $resultD = mysqli_query($conn, $sql);
-            if ($result) {
-                $_SESSION['message'] = "Admin has been Deleted successfully.";
-                $_SESSION['message_type'] = "success";
+            // Ideally, use a unique identifier (like an admin ID) instead of the password.
+            $deleteParam = $_GET['delete'];
+
+            // Prepare a deletion statement
+            $stmt = mysqli_prepare($conn, "DELETE FROM `admin_login` WHERE `password` = ?");
+            if ($stmt) {
+                mysqli_stmt_bind_param($stmt, "s", $deleteParam);
+                mysqli_stmt_execute($stmt);
+
+                if (mysqli_stmt_affected_rows($stmt) > 0) {
+                    $_SESSION['message'] = "Admin has been deleted successfully.";
+                    $_SESSION['message_type'] = "success";
+                } else {
+                    $_SESSION['message'] = "No matching admin found or deletion failed.";
+                    $_SESSION['message_type'] = "danger";
+                }
+                mysqli_stmt_close($stmt);
             } else {
-                $_SESSION['message'] = "Admin has been Deleted successfully.";
-                $_SESSION['message_type'] = "success";
+                $_SESSION['message'] = "Database error during deletion.";
+                $_SESSION['message_type'] = "danger";
             }
             header("Location: " . $_SERVER['PHP_SELF']);
             exit();
-
         }
 
-        // to edit a user 
+        // Handle POST requests for editing or adding a new admin
         if ($_SERVER['REQUEST_METHOD'] == "POST") {
+
+            // Add CSRF token validation here for further protection
+        
             if (isset($_POST['snoEdit'])) {
-                // Get data for editing
-                $password = $_POST['snoEdit'];
-                $title = $_POST["titleEdit"] ?? '';
-                $description = $_POST["descriptionEdit"] ?? '';
-
-                // Update query
-                $sql = "UPDATE `admin_login` SET `name` = '$title', `password` = '$description' WHERE `admin_login`.`password` = '$password';";
-                $result = mysqli_query($conn, $sql);
-
-                if ($result) {
-                    $_SESSION['message'] = "Admin details updated successfully.";
-                    $_SESSION['message_type'] = "success";
+                // Editing an existing admin
+                $snoEdit = $_POST['snoEdit']; // the original password used as an identifier
+                $title   = trim($_POST["titleEdit"] ?? '');
+                $description = trim($_POST["descriptionEdit"] ?? '');
+                
+                // In this example, we're not hashing passwords.
+                $newPassword = $description;
+            
+                // If the new password is different from the original,
+                // check if it already exists in the database.
+                if ($newPassword !== $snoEdit) {
+                    $stmtCheck = mysqli_prepare($conn, "SELECT COUNT(*) FROM `admin_login` WHERE `password` = ?");
+                    mysqli_stmt_bind_param($stmtCheck, "s", $newPassword);
+                    mysqli_stmt_execute($stmtCheck);
+                    mysqli_stmt_bind_result($stmtCheck, $count);
+                    mysqli_stmt_fetch($stmtCheck);
+                    mysqli_stmt_close($stmtCheck);
+            
+                    if ($count > 0) {
+                        $_SESSION['message'] = "Sorry but you can't use this password";
+                        $_SESSION['message_type'] = "danger";
+                        header("Location: " . $_SERVER['PHP_SELF']);
+                        exit();
+                    }
+                }
+            
+                // Proceed with updating the record using the old password as identifier.
+                $stmt = mysqli_prepare($conn, "UPDATE `admin_login` SET `name` = ?, `password` = ? WHERE `password` = ?");
+                if ($stmt) {
+                    mysqli_stmt_bind_param($stmt, "sss", $title, $newPassword, $snoEdit);
+                    mysqli_stmt_execute($stmt);
+            
+                    if (mysqli_stmt_affected_rows($stmt) > 0) {
+                        $_SESSION['message'] = "Admin details updated successfully.";
+                        $_SESSION['message_type'] = "success";
+                    } else {
+                        $_SESSION['message'] = "Update failed or no changes made.";
+                        $_SESSION['message_type'] = "danger";
+                    }
+                    mysqli_stmt_close($stmt);
                 } else {
-                    $_SESSION['message'] = "Failed to update admin due to an internal issue.";
+                    $_SESSION['message'] = "Database error during update.";
                     $_SESSION['message_type'] = "danger";
                 }
                 header("Location: " . $_SERVER['PHP_SELF']);
                 exit();
+            }
+            else {
+                // Enable MySQLi exceptions for easier error handling
+                mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
 
-            } else {
+                if ($_SERVER['REQUEST_METHOD'] == "POST" && !isset($_POST['snoEdit'])) {
+                    // Adding a new admin
+                    $title = trim($_POST["title"] ?? '');
+                    $description = trim($_POST["description"] ?? '');
 
-                $title = $_POST["title"] ?? '';
-                $description = $_POST["description"] ?? '';
+                    try {
+                        $stmt = mysqli_prepare($conn, "INSERT INTO `admin_login` (`name`, `password`) VALUES (?, ?)");
+                        if (!$stmt) {
+                            throw new Exception("Database error during insertion: " . mysqli_error($conn));
+                        }
+                        mysqli_stmt_bind_param($stmt, "ss", $title, $description);
+                        mysqli_stmt_execute($stmt);
 
-                // Insert query
-                $sql = "INSERT INTO `admin_login` (`name`, `password`) VALUES ('$title', '$description')";
-                $result = mysqli_query($conn, $sql);
-
-                if ($result) {
-                    $_SESSION['message'] = "New admin added successfully.";
-                    $_SESSION['message_type'] = "success";
-                } else {
-                    $_SESSION['message'] = "Failed to add new admin due to an internal issue.";
-                    $_SESSION['message_type'] = "danger";
+                        if (mysqli_stmt_affected_rows($stmt) > 0) {
+                            $_SESSION['message'] = "New admin added successfully.";
+                            $_SESSION['message_type'] = "success";
+                        } else {
+                            $_SESSION['message'] = "Failed to add new admin.";
+                            $_SESSION['message_type'] = "danger";
+                        }
+                        mysqli_stmt_close($stmt);
+                    } catch (mysqli_sql_exception $e) {
+                        if ($e->getCode() == 1062) { // Duplicate entry error code
+                            $_SESSION['message'] = "sorry but you can't use this password";
+                            $_SESSION['message_type'] = "danger";
+                        } else {
+                            $_SESSION['message'] = "Database error: " . $e->getMessage();
+                            $_SESSION['message_type'] = "danger";
+                        }
+                    }
+                    header("Location: " . $_SERVER['PHP_SELF']);
+                    exit();
                 }
-                header("Location: " . $_SERVER['PHP_SELF']);
-                exit();
 
             }
-
         }
         ?>
 
@@ -153,8 +213,8 @@ $name = $_SESSION['name'];
                             <input type="hidden" name="snoEdit" id="snoEdit">
                             <div class="form-group">
                                 <label for="title">Admin Name</label>
-                                <input type="text" class="form-control" id="titleEdit" name="titleEdit"
-                                    aria-describedby="emailHelp" placeholder="Enter email" required>
+                                <input type="text" class="form-control" id="titleEdit" name="titleEdit" minlength="5"
+                                    maxlength="20" aria-describedby="emailHelp" placeholder="Edit Admin Name" required>
                                 <small id="emailHelp" class="form-text text-muted">We'll never share your Info with
                                     anyone
                                     else.</small>
@@ -162,7 +222,7 @@ $name = $_SESSION['name'];
                             <div class="form-group">
                                 <label for="desc">Admin Password</label>
                                 <input type="text" class="form-control" id="descriptionEdit" name="descriptionEdit"
-                                    maxlength=15 placeholder="Password" required>
+                                    minlength="5" maxlength="15" maxlength=15 placeholder="Password" required>
                             </div>
                             <div class="modal-footer">
                                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
@@ -173,7 +233,7 @@ $name = $_SESSION['name'];
                 </div>
             </div>
         </div>
-        
+
         <!-- important container to add new data -->
         <!-- Add Admin Form -->
         <div class="container my-4">
@@ -184,12 +244,12 @@ $name = $_SESSION['name'];
                     <div class="form-group col-md-4">
                         <label for="title">Admin Name</label>
                         <input type="text" class="form-control" id="title" name="title" aria-describedby="emailHelp"
-                            placeholder="Enter email" required>
+                            minlength="5" maxlength="20" placeholder="Enter Admin Name" required>
                     </div>
                     <div class="form-group col-md-4">
                         <label for="description">Admin Password</label>
-                        <input type="text" class="form-control" id="description" name="description" maxlength="15"
-                            placeholder="Password" required>
+                        <input type="text" class="form-control" id="description" name="description" minlength="5"
+                            maxlength="15" placeholder="Password" required>
                     </div>
                 </div>
                 <small id="emailHelp" class="form-text text-muted" style="margin-top: -10px;">Please note the new
@@ -287,9 +347,16 @@ $name = $_SESSION['name'];
     <script src="//cdn.datatables.net/2.2.2/js/dataTables.min.js"></script>
     <script>
         $(document).ready(function () {
-            $('#myTable').DataTable();
+            var dtOptions = {};
+            // Check if the viewport width is 767px or less (mobile)
+            if ($(window).width() <= 767) {
+                dtOptions.lengthChange = false;
+            }
 
+            // Initialize DataTable with the options
+            $('#myTable').DataTable(dtOptions);
         });
+
     </script>
 
 </body>

@@ -1,24 +1,68 @@
-<nav class="navbar navbar-expand-lg navbar-light bg-light">
+<style>
+  nav {
+    border-bottom: 5px solid red;
+    box-shadow: 0px 5px 5px -5px rgba(0, 0, 0, 1);
+    box-sizing: border-box;
+  }
 
-  <a class="navbar-brand" href="../admin.php">
-    <img src="../logo.svg" alt="logo" class="logo d-inline-block align-top">
-  </a>
+  /* Responsive adjustments */
+  /* Responsive adjustments */
+  @media (max-width: 767px) {
 
-  <!-- Navbar toggler for mobile view -->
-  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
-    aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-    <span class="navbar-toggler-icon"></span>
-  </button>
+    nav {
+      width: 100vw;
+    }
 
-  <!-- Navbar links -->
-  <div class="collapse navbar-collapse" id="navbarSupportedContent">
-    <ul class="navbar-nav ml-auto">
-      <li class="nav-item">
-        <a class="nav-link navbar-user" href="profile.php"
-           style="font-weight: 700; font-size: 1.25rem; color: #0f0f0f;">
-          USER: <?php echo $_SESSION['name']; ?>
+    nav #logoImg {
+      position: relative;
+      left: -12%;
+      padding: 0%;
+      margin: 0%;
+      margin-left: -25;
+    }
+
+    nav #loginBtn {
+      position: absolute;
+      right: 5%;
+    }
+
+    #vanish {
+      display: none;
+    }
+  }
+</style>
+
+
+<div style="background-color: antiquewhite;">
+  <nav class="navbar navbar-light bg-white fixed-top shadow" style="flex-wrap: nowrap;">
+    <div class="container-fluid d-flex justify-content-between align-items-center px-4"
+      style="flex-wrap: nowrap; white-space: nowrap;">
+
+      <!-- Left side: Logo & Title -->
+      <div class="d-flex align-items-center" id="logoImg" style="white-space: nowrap;">
+        <a href="/" title="Home" rel="home" class="d-flex align-items-center text-decoration-none"
+          style="white-space: nowrap;">
+          <img src="../images/image.webp" alt="Home" style="height: 50px; width: auto;" loading="lazy">
+          <span class="ms-2 fw-bold fs-5" style="white-space: nowrap;">
+            <h5 style="color: black; margin: 0;">| GPD <span id="vanish" class="d-none d-md-inline">Inventory Management
+                System</span></h5>
+          </span>
         </a>
-      </li>
-    </ul>
-  </div>
-</nav>
+      </div>
+
+      <!-- Right Side: Display Session Name or Login Button -->
+      <div class="d-flex align-items-center" id="loginBtn" style="white-space: nowrap;">
+        <?php
+        if (isset($_SESSION['name']) && !empty($_SESSION['name'])) {
+          // If session name exists, display it
+          echo '<span class="navbar-text ms-2 fw-bold" style="color: black">' . htmlspecialchars($_SESSION['name']) . '</span>';
+        } else {
+          // Otherwise, display the login button
+          echo '<button class="btn btn-outline" type="submit" name="login" id="loginButton">Login</button>';
+        }
+        ?>
+      </div>
+
+    </div>
+  </nav>
+</div>

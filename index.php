@@ -144,13 +144,13 @@ if (isset($_SESSION['popup_message'])) {
         width: 100vw;
       }
 
-      nav #logoImg{
+      nav #logoImg {
         padding: 0%;
         margin: 0%;
         margin-left: -25;
       }
 
-      nav #loginBtn{
+      nav #loginBtn {
         position: absolute;
         right: 5%;
       }
@@ -187,81 +187,92 @@ if (isset($_SESSION['popup_message'])) {
         font-size: 1rem;
       }
     }
-/* For mobile devices */
-#loginModel{
-  width: auto;
-  height: auto;
-}
 
-#loginModal .modal-dialog {
-  margin: auto;
-  display: flex;
-  align-items: center;
-  min-height: calc(80vh - 2rem); /* A bit less than 100vh to account for browser chrome */
-}
-
-
-@media (max-width: 767px) {
-  .custom-modal {
-    padding: 0%;
-    margin: 0%;
-    height: 30%;
-    width: 80% !important; 
-    display: grid;
-    justify-content: center;
-    align-items: center;   /* Use 90% of the viewport width */
-    max-width: 250px;          /* Maximum width set to 300px */
-    height: auto;              /* Let content define the height, or adjust as needed */
-    margin: auto;
-    right: 13%;       
-  }
-
-  h3{
-    font-size: small;
-  }
-  
-  p{
-    font-size: small;
-  }
-
-  button.btn {
-    font-size: small;
-    padding: 0.3rem 0.5rem;
-    height: auto;  /* Adjust or set a fixed height if needed */
-    width: auto;   /* You can also set a fixed width, e.g., width: 100px; */
-  }
-  
-  a{
-    font-size: small;
-  }
-  /* Make inputs smaller */
-  input.form-control {
-    font-size: small;
-    padding: 0.3rem;
-    height: auto;  /* You can also set a fixed height, e.g., height: 30px; */
-    width: 100%;
-  }
-
-
-  #loginModal .modal-content {
-    width: 100%;               /* Make the modal-content fill the dialog width */
-    height: auto;    
-    padding : 0;
-    margin: 0;          /* Let the modal content height adjust automatically */
-  }
-}
-
-
-  
-  /* For larger devices */
-  @media (min-width: 768px) {
-    #loginModal .modal-dialog {
-      max-width: 500px; /* Or any fixed width you prefer */
-      margin: auto;
-      box-sizing: border-box;
+    /* For mobile devices */
+    #loginModel {
+      width: auto;
+      height: auto;
     }
-  }
 
+    #loginModal .modal-dialog {
+      margin: auto;
+      display: flex;
+      align-items: center;
+      min-height: calc(80vh - 2rem);
+      /* A bit less than 100vh to account for browser chrome */
+    }
+
+
+    @media (max-width: 767px) {
+      .custom-modal {
+        padding: 0%;
+        margin: 0%;
+        height: 30%;
+        width: 80% !important;
+        display: grid;
+        justify-content: center;
+        align-items: center;
+        /* Use 90% of the viewport width */
+        max-width: 250px;
+        /* Maximum width set to 300px */
+        height: auto;
+        /* Let content define the height, or adjust as needed */
+        margin: auto;
+        right: 13%;
+      }
+
+      h3 {
+        font-size: small;
+      }
+
+      p {
+        font-size: small;
+      }
+
+      button.btn {
+        font-size: small;
+        padding: 0.3rem 0.5rem;
+        height: auto;
+        /* Adjust or set a fixed height if needed */
+        width: auto;
+        /* You can also set a fixed width, e.g., width: 100px; */
+      }
+
+      a {
+        font-size: small;
+      }
+
+      /* Make inputs smaller */
+      input.form-control {
+        font-size: small;
+        padding: 0.3rem;
+        height: auto;
+        /* You can also set a fixed height, e.g., height: 30px; */
+        width: 100%;
+      }
+
+
+      #loginModal .modal-content {
+        width: 100%;
+        /* Make the modal-content fill the dialog width */
+        height: auto;
+        padding: 0;
+        margin: 0;
+        /* Let the modal content height adjust automatically */
+      }
+    }
+
+
+
+    /* For larger devices */
+    @media (min-width: 768px) {
+      #loginModal .modal-dialog {
+        max-width: 500px;
+        /* Or any fixed width you prefer */
+        margin: auto;
+        box-sizing: border-box;
+      }
+    }
   </style>
 </head>
 
@@ -303,16 +314,16 @@ if (isset($_SESSION['popup_message'])) {
     </nav>
   </div>
 
-<!-- Login Modal -->
-<div class="modal fade" id="loginModal" tabindex="-1" role="dialog" aria-hidden="true" style="padding: 0; margin: 0;">
-  <div class="modal-dialog modal-dialog-centered custom-modal" role="document">
-    <div class="modal-content" style="border-radius: 0;">
-      <div class="modal-body" id="loginModalBody">
-        <!-- Login form content will be injected here -->
+  <!-- Login Modal -->
+  <div class="modal fade" id="loginModal" tabindex="-1" role="dialog" aria-hidden="true" style="padding: 0; margin: 0;">
+    <div class="modal-dialog modal-dialog-centered custom-modal" role="document">
+      <div class="modal-content" style="border-radius: 0;">
+        <div class="modal-body" id="loginModalBody">
+          <!-- Login form content will be injected here -->
+        </div>
       </div>
     </div>
   </div>
-</div>
 
 
 
@@ -426,11 +437,12 @@ if (isset($_SESSION['popup_message'])) {
       once: true
     });
   </script>
+
   <script>
-document.addEventListener('DOMContentLoaded', function() {
-  let logginFlag = false;
-// Minified HTML content for user login form
-let loginHTML = `<div class="card mx-auto" style="border-radius:0; width:100%;">
+    document.addEventListener('DOMContentLoaded', function () {
+      let logginFlag = false;
+      // Minified HTML content for user login form
+      let loginHTML = `<div class="card mx-auto" style="border-radius:0; width:100%;">
   <div class="card-body p-4">
     <div class="pb-4 text-center">
       <img src="images/image.webp" loading="lazy" alt="college_logo" style="width:35%;height:auto;">
@@ -438,7 +450,7 @@ let loginHTML = `<div class="card mx-auto" style="border-radius:0; width:100%;">
     <h3 class="text-uppercase text-center mb-4">Login to Inventory</h3>
     <form action="index.php" method="POST">
       <div class="form-group">
-        <input type="password" name="password" class="form-control form-control-lg" maxlength="15" placeholder="Password">
+        <input type="password" name="password" class="form-control form-control-lg" minlength="5" maxlength="15" placeholder="Password">
       </div>
       <input type="hidden" name="loginType" value="user">
       <div class="d-flex justify-content-center">
@@ -450,8 +462,8 @@ let loginHTML = `<div class="card mx-auto" style="border-radius:0; width:100%;">
   </div>
 </div>`;
 
-// Minified HTML content for admin login form
-let adminLoginHTML = `<div class="card mx-auto" style="border-radius:0; width:100%;">
+      // Minified HTML content for admin login form
+      let adminLoginHTML = `<div class="card mx-auto" style="border-radius:0; width:100%;">
   <div class="card-body p-4">
     <div class="pb-4 text-center">
       <img src="images/image.webp" loading="lazy" alt="college_logo" style="width:35%;height:auto;">
@@ -459,7 +471,7 @@ let adminLoginHTML = `<div class="card mx-auto" style="border-radius:0; width:10
     <h3 class="text-uppercase text-center mb-4">Logging In As Admin</h3>
     <form action="index.php" method="POST">
       <div class="form-group">
-        <input type="password" name="password" class="form-control form-control-lg" maxlength="15" placeholder="Password">
+        <input type="password" name="password" class="form-control form-control-lg" minlength="5" maxlength="15"  placeholder="Password">
       </div>
       <input type="hidden" name="loginType" value="admin">
       <div class="d-flex justify-content-center">
@@ -470,44 +482,44 @@ let adminLoginHTML = `<div class="card mx-auto" style="border-radius:0; width:10
   </div>
 </div>`;
 
-  // Attach event for toggling to admin login form
-  function attachAdminLoginEvent() {
-    var adminLink = document.getElementById('loginadmin');
-    if (adminLink) {
-      adminLink.addEventListener('click', function(event) {
-        event.preventDefault();
-        document.getElementById('loginModalBody').innerHTML = adminLoginHTML;
-        attachUserLoginEvent();
-      });
-    }
-  }
+      // Attach event for toggling to admin login form
+      function attachAdminLoginEvent() {
+        var adminLink = document.getElementById('loginadmin');
+        if (adminLink) {
+          adminLink.addEventListener('click', function (event) {
+            event.preventDefault();
+            document.getElementById('loginModalBody').innerHTML = adminLoginHTML;
+            attachUserLoginEvent();
+          });
+        }
+      }
 
-  // Attach event for toggling to user login form
-  function attachUserLoginEvent() {
-    var userLink = document.getElementById('loginuser');
-    if (userLink) {
-      userLink.addEventListener('click', function(event) {
-        event.preventDefault();
-        document.getElementById('loginModalBody').innerHTML = loginHTML;
-        attachAdminLoginEvent();
-      });
-    }
-  }
+      // Attach event for toggling to user login form
+      function attachUserLoginEvent() {
+        var userLink = document.getElementById('loginuser');
+        if (userLink) {
+          userLink.addEventListener('click', function (event) {
+            event.preventDefault();
+            document.getElementById('loginModalBody').innerHTML = loginHTML;
+            attachAdminLoginEvent();
+          });
+        }
+      }
 
-  // When the login button is clicked, toggle the modal
-  document.getElementById('loginButton').onclick = function(event) {
-    event.preventDefault();
-    if (logginFlag) {
-      $('#loginModal').modal('hide');
-    } else {
-      document.getElementById('loginModalBody').innerHTML = loginHTML;
-      attachAdminLoginEvent();
-      $('#loginModal').modal('show');
-    }
-    logginFlag = !logginFlag;
-  };
-});
-</script>
+      // When the login button is clicked, toggle the modal
+      document.getElementById('loginButton').onclick = function (event) {
+        event.preventDefault();
+        if (logginFlag) {
+          $('#loginModal').modal('hide');
+        } else {
+          document.getElementById('loginModalBody').innerHTML = loginHTML;
+          attachAdminLoginEvent();
+          $('#loginModal').modal('show');
+        }
+        logginFlag = !logginFlag;
+      };
+    });
+  </script>
 
 </body>
 
