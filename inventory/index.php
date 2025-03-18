@@ -1,18 +1,23 @@
 <?php
 ob_start();
 session_start();
+
+// First, make sure the user is logged in
 if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== true) {
     header("Location: ../index.php");
     exit();
 }
 if (
-    !isset($_SESSION['branch']) || !isset($_SESSION['lab']) ||
-    $_SESSION['branch'] !== 'INVENTORY' || $_SESSION['lab'] !== 'INVENTORY'
+    !(
+        (isset($_SESSION['branch'], $_SESSION['lab']) && $_SESSION['branch'] === 'INVENTORY' && $_SESSION['lab'] === 'INVENTORY')
+        ||
+        (isset($_SESSION['name']) && !empty($_SESSION['name']))
+    )
 ) {
-    // Optionally, you could display an error message or log the attempt
     header("Location: ../index.php");
     exit();
 }
+
 ?>
 
 <!DOCTYPE html>

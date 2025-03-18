@@ -208,28 +208,11 @@ $name = $_SESSION['name'];
           </div>
         </li>
 
-        <!-- Main Inventory dropdown -->
-        <li class="nav-item">
-          <a class="nav-link hover-class bg-col" href="#option1" data-toggle="collapse"
-            data-target="#collegeInventoryDropdown" aria-expanded="false"
-            aria-controls="collegeInventoryDropdown">College Inventory</a>
-          <div class="collapse" id="collegeInventoryDropdown">
-            <ul class="list-unstyled ml-3">
-              <li class="nav-item">
-                <a class="nav-link hover-class" href="#inventoryAllItems"
-                  onclick="showContent('inventoryAllItems')">Inventory All Items</a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link hover-class" href="#itemAllotment" onclick="showContent('itemAllotment')">Item
-                  Allotment</a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link hover-class" href="#inventoryItemReturn"
-                  onclick="showContent('inventoryItemReturn')">Inventory Return Req</a>
-              </li>
-            </ul>
-          </div>
-        </li>
+      <!-- Main Inventory dropdown -->
+      <li class="nav-item">
+        <a class="nav-link hover-class bg-col" href="inventory/index.php" id="inventoryLink">College Inventory</a>
+      </li>
+
         <li class="nav-item bg-col">
           <a class="nav-link hover-class" href="adminpanel/allotment_request.php">Allotment Requests</a>
         </li>
@@ -245,9 +228,6 @@ $name = $_SESSION['name'];
     <!-- Links from bottom -->
     <div class="bottom-links">
       <ul class="nav flex-column">
-        <li class="nav-item">
-          <a class="nav-link hover-class" href="#account" onclick="showContent('account')">Your Account</a>
-        </li>
         <form action="logout.php" method="get">
           <input type="submit" value="Logout">
         </form>
