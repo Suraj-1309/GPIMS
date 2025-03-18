@@ -86,48 +86,103 @@ $name = $_SESSION['name'];
         if ($_SERVER['REQUEST_METHOD'] == "POST") {
             if (isset($_POST['snoEdit'])) {
                 // Get data for editing
-                $snoEdit = $_POST['snoEdit'];
-                $name = $_POST['nameEdit'] ?? '';
+                $snoEdit = $_POST['snoEdit']; // original password used as identifier
+                $name = trim($_POST['nameEdit'] ?? '');
                 $branch = 'INVENTORY_OFFICER';
                 $lab = 'INVENTORY_OFFICER';
-                $password = $_POST['passwordEdit'] ?? '';
+                $password = trim($_POST['passwordEdit'] ?? ''); // new password
+        
+                // Check if the new password is different from the original
+                if ($password !== $snoEdit) {
+                    // Prepare a statement to check if the new password already exists
+                    $stmtCheck = mysqli_prepare($conn, "SELECT COUNT(*) FROM `user_login` WHERE `password` = ?");
+                    mysqli_stmt_bind_param($stmtCheck, "s", $password);
+                    mysqli_stmt_execute($stmtCheck);
+                    mysqli_stmt_bind_result($stmtCheck, $count);
+                    mysqli_stmt_fetch($stmtCheck);
+                    mysqli_stmt_close($stmtCheck);
 
-                // Update query
-                $sql = "UPDATE `user_login` SET `name` = '$name',  `branch` = '$branch',  `lab` = '$lab',  `password` = '$password'  WHERE `password` = '$snoEdit';";
+                    // If password exists, show error message and stop update
+                    if ($count > 0) {
+                        $_SESSION['message'] = "Sorry, you can't use this password";
+                        $_SESSION['message_type'] = "danger";
+                        header("Location: " . $_SERVER['PHP_SELF']);
+                        exit();
+                    }
+                }
 
-                $result = mysqli_query($conn, $sql);
+                // Proceed with updating the record using a prepared statement
+                $stmt = mysqli_prepare($conn, "UPDATE `user_login` SET `name` = ?, `branch` = ?, `lab` = ?, `password` = ? WHERE `password` = ?");
+                if ($stmt) {
+                    mysqli_stmt_bind_param($stmt, "sssss", $name, $branch, $lab, $password, $snoEdit);
+                    mysqli_stmt_execute($stmt);
 
-                if ($result) {
-                    $_SESSION['message'] = "Inventory Officer details updated successfully.";
-                    $_SESSION['message_type'] = "success";
+                    if (mysqli_stmt_affected_rows($stmt) > 0) {
+                        $_SESSION['message'] = "Inventory Officer details updated successfully.";
+                        $_SESSION['message_type'] = "success";
+                    } else {
+                        $_SESSION['message'] = "Update failed or no changes made.";
+                        $_SESSION['message_type'] = "danger";
+                    }
+                    mysqli_stmt_close($stmt);
                 } else {
-                    $_SESSION['message'] = "Failed to update Inventory Officer Details due to an internal issue.";
+                    $_SESSION['message'] = "Database error during update.";
                     $_SESSION['message_type'] = "danger";
                 }
                 header("Location: " . $_SERVER['PHP_SELF']);
                 exit();
-
             } else {
-
-                $name = $_POST["name"] ?? '';
+                // Retrieve and sanitize input values
+                $name = trim($_POST["name"] ?? '');
+                $password = trim($_POST["password"] ?? '');
                 $branch = 'INVENTORY_OFFICER';
                 $lab = 'INVENTORY_OFFICER';
-                $password = $_POST["password"] ?? '';
 
-                // Insert query
-                $sql = "INSERT INTO `user_login` (`name`,`branch`,`lab`, `password`) VALUES ('$name', '$branch','$lab','$password')";
-                $result = mysqli_query($conn, $sql);
+                // Check if the password already exists in the database
+                $stmtCheck = mysqli_prepare($conn, "SELECT COUNT(*) FROM `user_login` WHERE `password` = ?");
+                if ($stmtCheck) {
+                    mysqli_stmt_bind_param($stmtCheck, "s", $password);
+                    mysqli_stmt_execute($stmtCheck);
+                    mysqli_stmt_bind_result($stmtCheck, $count);
+                    mysqli_stmt_fetch($stmtCheck);
+                    mysqli_stmt_close($stmtCheck);
 
-                if ($result) {
-                    $_SESSION['message'] = "New Inventory Officer added successfully.";
-                    $_SESSION['message_type'] = "success";
+                    if ($count > 0) {
+                        $_SESSION['message'] = "Sorry, you can't use this password";
+                        $_SESSION['message_type'] = "danger";
+                        header("Location: " . $_SERVER['PHP_SELF']);
+                        exit();
+                    }
                 } else {
-                    $_SESSION['message'] = "Failed to add new Inventory Officer due to an internal issue.";
+                    $_SESSION['message'] = "Database error during duplicate check.";
+                    $_SESSION['message_type'] = "danger";
+                    header("Location: " . $_SERVER['PHP_SELF']);
+                    exit();
+                }
+
+                // Insert new Inventory Officer record using a prepared statement
+                $stmt = mysqli_prepare($conn, "INSERT INTO `user_login` (`name`, `branch`, `lab`, `password`) VALUES (?, ?, ?, ?)");
+                if ($stmt) {
+                    mysqli_stmt_bind_param($stmt, "ssss", $name, $branch, $lab, $password);
+                    mysqli_stmt_execute($stmt);
+
+                    if (mysqli_stmt_affected_rows($stmt) > 0) {
+                        $_SESSION['message'] = "New Inventory Officer added successfully.";
+                        $_SESSION['message_type'] = "success";
+                    } else {
+                        $_SESSION['message'] = "Failed to add new Inventory Officer due to an internal issue.";
+                        $_SESSION['message_type'] = "danger";
+                    }
+                    mysqli_stmt_close($stmt);
+                } else {
+                    $_SESSION['message'] = "Database error during insertion.";
                     $_SESSION['message_type'] = "danger";
                 }
                 header("Location: " . $_SERVER['PHP_SELF']);
                 exit();
             }
+
+
         }
         ?>
 
@@ -153,12 +208,12 @@ $name = $_SESSION['name'];
                             <div class="form-group">
                                 <label for="name">User Name</label>
                                 <input type="text" class="form-control" id="nameEdit" name="nameEdit"
-                                    placeholder="Enter Name">
+                                    placeholder="Enter Name" required minlength="5" maxlength="20">
                             </div>
                             <div class="form-group">
                                 <label for="password">Password</label>
                                 <input type="text" class="form-control" id="passwordEdit" name="passwordEdit"
-                                    placeholder="Enter Password">
+                                    placeholder="Enter Password" required minlength="5" maxlength="15">
                             </div>
                             <div class="modal-footer">
                                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
@@ -172,23 +227,32 @@ $name = $_SESSION['name'];
 
 
         <!-- important container to add new data -->
+        <style>
+            @media (max-width: 700px) {
+                h3 {
+                    font-size: 1.25rem;
+                    /* roughly equivalent to an h5 font size */
+                    text-align: right;
+                }
+            }
+        </style>
 
         <!-- Add Admin Form -->
         <div class="container my-4">
-            <h4>Add New Inventory Officer</h4>
+            <h3>Add New Inventory Officer</h3>
             <form id="addForm" action="<?php $_SERVER['PHP_SELF'] ?>" method="POST">
                 <div class="form-row">
 
                     <div class="form-group col-md-5">
                         <label for="name">Inventory Officer Name</label>
                         <input type="text" class="form-control" id="name" name="name" aria-describedby="emailHelp"
-                            maxlength="20" placeholder="Enter Name">
+                            maxlength="20" placeholder="Enter Name" required minlength="5" maxlength="20">
                     </div>
 
                     <div class="form-group col-md-5">
                         <label for="password">Password</label>
                         <input type="text" class="form-control" id="password" name="password" maxlength="15"
-                            placeholder="Password">
+                            placeholder="Password" required minlength="5" maxlength="15">
                     </div>
                 </div>
                 <button type="submit" class="btn btn-primary my-2">Add</button>
@@ -294,9 +358,16 @@ $name = $_SESSION['name'];
     <script src="//cdn.datatables.net/2.2.2/js/dataTables.min.js"></script>
     <script>
         $(document).ready(function () {
-            $('#myTable').DataTable();
+            var dtOptions = {};
+            // Check if the viewport width is 767px or less (mobile)
+            if ($(window).width() <= 767) {
+                dtOptions.lengthChange = false;
+            }
 
+            // Initialize DataTable with the options
+            $('#myTable').DataTable(dtOptions);
         });
+
     </script>
 
 </body>

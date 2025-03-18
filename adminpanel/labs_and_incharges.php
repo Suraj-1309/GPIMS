@@ -87,48 +87,108 @@ $name = $_SESSION['name'];
         // to edit a user 
         if ($_SERVER['REQUEST_METHOD'] == "POST") {
             if (isset($_POST['snoEdit'])) {
-                // Get data for editing
-                $snoEdit = $_POST['snoEdit'];
-                $name = $_POST['nameEdit'] ?? '';
-                $branch = $_POST['branchEdit'] ?? '';
-                $lab = $_POST['labEdit'] ?? '';
-                $password = $_POST['passwordEdit'] ?? '';
+                // Get and sanitize input values
+                $snoEdit = trim($_POST['snoEdit']); // original password used as identifier
+                $name = trim($_POST['nameEdit'] ?? '');
+                $branch = trim($_POST['branchEdit'] ?? '');
+                $lab = trim($_POST['labEdit'] ?? '');
+                $password = trim($_POST['passwordEdit'] ?? ''); // new password
+        
+                // If the new password differs from the original, check if it already exists
+                if ($password !== $snoEdit) {
+                    $stmtCheck = mysqli_prepare($conn, "SELECT COUNT(*) FROM `user_login` WHERE `password` = ?");
+                    if ($stmtCheck) {
+                        mysqli_stmt_bind_param($stmtCheck, "s", $password);
+                        mysqli_stmt_execute($stmtCheck);
+                        mysqli_stmt_bind_result($stmtCheck, $count);
+                        mysqli_stmt_fetch($stmtCheck);
+                        mysqli_stmt_close($stmtCheck);
 
-                // Update query
-                $sql = "UPDATE `user_login` SET `name` = '$name',  `branch` = '$branch',  `lab` = '$lab',  `password` = '$password'  WHERE `password` = '$snoEdit';";
+                        if ($count > 0) {
+                            $_SESSION['message'] = "Sorry, you can't use this password";
+                            $_SESSION['message_type'] = "danger";
+                            header("Location: " . $_SERVER['PHP_SELF']);
+                            exit();
+                        }
+                    } else {
+                        $_SESSION['message'] = "Database error during duplicate check.";
+                        $_SESSION['message_type'] = "danger";
+                        header("Location: " . $_SERVER['PHP_SELF']);
+                        exit();
+                    }
+                }
 
-                $result = mysqli_query($conn, $sql);
+                // Update the record using a prepared statement
+                $stmt = mysqli_prepare($conn, "UPDATE `user_login` SET `name` = ?, `branch` = ?, `lab` = ?, `password` = ? WHERE `password` = ?");
+                if ($stmt) {
+                    mysqli_stmt_bind_param($stmt, "sssss", $name, $branch, $lab, $password, $snoEdit);
+                    mysqli_stmt_execute($stmt);
 
-                if ($result) {
-                    $_SESSION['message'] = "Lab Incharge details updated successfully.";
-                    $_SESSION['message_type'] = "success";
+                    if (mysqli_stmt_affected_rows($stmt) > 0) {
+                        $_SESSION['message'] = "Lab Incharge details updated successfully.";
+                        $_SESSION['message_type'] = "success";
+                    } else {
+                        $_SESSION['message'] = "Failed to update Lab Incharge Details due to an internal issue.";
+                        $_SESSION['message_type'] = "danger";
+                    }
+                    mysqli_stmt_close($stmt);
                 } else {
-                    $_SESSION['message'] = "Failed to update Lab Incharge Details due to an internal issue.";
+                    $_SESSION['message'] = "Database error during update.";
                     $_SESSION['message_type'] = "danger";
                 }
                 header("Location: " . $_SERVER['PHP_SELF']);
                 exit();
             } else {
+                // Retrieve and sanitize input values
+                $name = trim($_POST["name"] ?? '');
+                $branch = trim($_POST["branch"] ?? '');
+                $lab = trim($_POST["lab"] ?? '');
+                $password = trim($_POST["password"] ?? '');
 
-                $name = $_POST["name"] ?? '';
-                $branch = $_POST["branch"] ?? '';
-                $lab = $_POST["lab"] ?? '';
-                $password = $_POST["password"] ?? '';
+                // Check if the password already exists in the database
+                $stmtCheck = mysqli_prepare($conn, "SELECT COUNT(*) FROM `user_login` WHERE `password` = ?");
+                if ($stmtCheck) {
+                    mysqli_stmt_bind_param($stmtCheck, "s", $password);
+                    mysqli_stmt_execute($stmtCheck);
+                    mysqli_stmt_bind_result($stmtCheck, $count);
+                    mysqli_stmt_fetch($stmtCheck);
+                    mysqli_stmt_close($stmtCheck);
 
-                // Insert query
-                $sql = "INSERT INTO `user_login` (`name`,`branch`,`lab`, `password`) VALUES ('$name', '$branch','$lab','$password')";
-                $result = mysqli_query($conn, $sql);
-
-                if ($result) {
-                    $_SESSION['message'] = "New Lab Incharge added successfully.";
-                    $_SESSION['message_type'] = "success";
+                    if ($count > 0) {
+                        $_SESSION['message'] = "Sorry, you can't use this password";
+                        $_SESSION['message_type'] = "danger";
+                        header("Location: " . $_SERVER['PHP_SELF']);
+                        exit();
+                    }
                 } else {
-                    $_SESSION['message'] = "Failed to add new Lab Incharge due to an internal issue.";
+                    $_SESSION['message'] = "Database error during duplicate check.";
+                    $_SESSION['message_type'] = "danger";
+                    header("Location: " . $_SERVER['PHP_SELF']);
+                    exit();
+                }
+
+                // Insert new Lab Incharge record using a prepared statement
+                $stmt = mysqli_prepare($conn, "INSERT INTO `user_login` (`name`, `branch`, `lab`, `password`) VALUES (?, ?, ?, ?)");
+                if ($stmt) {
+                    mysqli_stmt_bind_param($stmt, "ssss", $name, $branch, $lab, $password);
+                    mysqli_stmt_execute($stmt);
+
+                    if (mysqli_stmt_affected_rows($stmt) > 0) {
+                        $_SESSION['message'] = "New Lab Incharge added successfully.";
+                        $_SESSION['message_type'] = "success";
+                    } else {
+                        $_SESSION['message'] = "Failed to add new Lab Incharge due to an internal issue.";
+                        $_SESSION['message_type'] = "danger";
+                    }
+                    mysqli_stmt_close($stmt);
+                } else {
+                    $_SESSION['message'] = "Database error during insertion.";
                     $_SESSION['message_type'] = "danger";
                 }
                 header("Location: " . $_SERVER['PHP_SELF']);
                 exit();
             }
+
         }
         ?>
 
@@ -136,7 +196,24 @@ $name = $_SESSION['name'];
         <!-- Edit Modal -->
 
 
+        <style>
+            @media (max-width: 700px) {
 
+                /* Force Branch and Lab fields to appear on the same row */
+                #editForm .form-group:nth-of-type(2),
+                #editForm .form-group:nth-of-type(3) {
+                    display: inline-block;
+                    width: 43%;
+                    box-sizing: border-box;
+                    vertical-align: top;
+                }
+
+                /* Optional: add a small gap between the two fields */
+                #editForm .form-group:nth-of-type(2) {
+                    margin-right: 4%;
+                }
+            }
+        </style>
         <!-- Edit Modal -->
         <div class="modal fade" id="editModel" tabindex="-1" role="dialog" aria-labelledby="editModelLabel"
             aria-hidden="true">
@@ -157,19 +234,19 @@ $name = $_SESSION['name'];
                             <div class="form-group">
                                 <label for="nameEdit">User Name</label>
                                 <input type="text" class="form-control" id="nameEdit" name="nameEdit"
-                                    placeholder="Enter User Name">
+                                    placeholder="Enter User Name" required minlength="5" maxlength="20">
                             </div>
 
                             <div class="form-group">
                                 <label for="branchEdit">Branch</label>
-                                <select class="form-control" id="branchEdit" name="branchEdit">
+                                <select class="form-control" id="branchEdit" name="branchEdit" required>
                                     <option value="" disabled selected>Select Branch</option>
                                 </select>
                             </div>
 
                             <div class="form-group">
                                 <label for="labEdit">Lab</label>
-                                <select class="form-control" id="labEdit" name="labEdit">
+                                <select class="form-control" id="labEdit" name="labEdit" required>
                                     <option value="" disabled selected>Select Lab</option>
                                 </select>
                             </div>
@@ -177,7 +254,7 @@ $name = $_SESSION['name'];
                             <div class="form-group">
                                 <label for="passwordEdit">User Password</label>
                                 <input type="text" class="form-control" id="passwordEdit" name="passwordEdit"
-                                    placeholder="Enter Password">
+                                    placeholder="Enter Password" minlength="5" maxlength="15" required>
                             </div>
 
                             <div class="modal-footer">
@@ -190,9 +267,26 @@ $name = $_SESSION['name'];
             </div>
         </div>
 
+        <style>
+            /* Your mobile styling (max-width: 700px) */
+            @media (max-width: 700px) {
+
+                #addForm .form-group:nth-of-type(2),
+                #addForm .form-group:nth-of-type(3) {
+                    display: inline-block;
+                    width: 43%;
+                    box-sizing: border-box;
+                    vertical-align: top;
+                }
+
+                /* Optional: add a small gap between the two fields */
+                #addForm .form-group:nth-of-type(2) {
+                    margin-right: 4%;
+                }
+            }
+        </style>
 
         <!-- important container to add new data -->
-
         <div class="container my-4">
             <h3>Add new User</h3>
             <form id="addForm" action="<?php $_SERVER['PHP_SELF'] ?>" method="POST">
@@ -200,12 +294,12 @@ $name = $_SESSION['name'];
                     <div class="form-group col-md-3">
                         <label for="name">Admin Name</label>
                         <input type="text" class="form-control" id="name" name="name" maxlength="20"
-                            placeholder="Enter Name">
+                            placeholder="Enter Name" minlength="5" maxlength="20" required>
                     </div>
 
                     <div class="form-group col-md-3">
                         <label for="branch">Branch Name</label>
-                        <select class="form-control" id="branch" name="branch">
+                        <select class="form-control" id="branch" name="branch" required>
                             <option value="" disabled selected>Select Branch</option>
                             <!-- Branch options will be loaded dynamically -->
                         </select>
@@ -213,16 +307,18 @@ $name = $_SESSION['name'];
 
                     <div class="form-group col-md-3">
                         <label for="lab">Lab Name</label>
-                        <select name="lab" id="lab" class="form-control">
+                        <select name="lab" id="lab" class="form-control" required>
                             <option value="" disabled selected>Select Lab</option>
                             <!-- Lab options will be loaded dynamically -->
                         </select>
                     </div>
 
+
+
                     <div class="form-group col-md-3">
                         <label for="password">Password</label>
                         <input type="text" class="form-control" id="password" name="password" maxlength="15"
-                            placeholder="Password">
+                            placeholder="Password" minlength="5" maxlength="15" required>
                     </div>
                 </div>
                 <button type="submit" class="btn btn-primary my-2">Add</button>
@@ -354,9 +450,16 @@ $name = $_SESSION['name'];
     <script src="//cdn.datatables.net/2.2.2/js/dataTables.min.js"></script>
     <script>
         $(document).ready(function () {
-            $('#myTable').DataTable();
+            var dtOptions = {};
+            // Check if the viewport width is 767px or less (mobile)
+            if ($(window).width() <= 767) {
+                dtOptions.lengthChange = false;
+            }
 
+            // Initialize DataTable with the options
+            $('#myTable').DataTable(dtOptions);
         });
+
     </script>
     <script>
         $(document).ready(function () {
