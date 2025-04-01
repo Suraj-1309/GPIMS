@@ -384,7 +384,7 @@ if (
                                 </div>
 
                                 <div class="form-group col-md-4">
-                                    <label for="srnoEdit">Serial Number & Bill Date</label>
+                                    <label for="srnoEdit">Bill Number & Bill Date</label>
                                     <div class="d-flex">
                                         <input type="number" class="form-control mr-2" id="srnoEdit" name="srnoEdit">
                                         <input type="date" class="form-control" id="bill_dateEdit" name="bill_dateEdit">
@@ -428,7 +428,7 @@ if (
             <div class="modal-dialog" role="document">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title" id="transferModelLabel">Allocate Stock Item</h5>
+                        <h5 class="modal-title" id="transferModelLabel">Intent Stock Item</h5>
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                             <span aria-hidden="true">&times;</span>
                         </button>
@@ -480,20 +480,22 @@ if (
         </div>
 
         <style>
-/* Responsive styling for smaller screens */
-@media (max-width: 767px) {
-  #button {
-    width: 100%; /* Adjust width to 80% of the screen */
-  }
-  #button .add {
-    width: 100%; /* Correctly targets the button element */
-  }
-}
+            /* Responsive styling for smaller screens */
+            @media (max-width: 767px) {
+                #button {
+                    width: 100%;
+                    /* Adjust width to 80% of the screen */
+                }
 
+                #button .add {
+                    width: 100%;
+                    /* Correctly targets the button element */
+                }
+            }
         </style>
 
         <!-- Add Admin Button -->
-        <div class="container my-4" id="button" >
+        <div class="container my-4" id="button">
             <!-- Add Item Button -->
             <button type="button" class="add btn btn-s btn-primary" data-toggle="modal" data-target="#addItemModal"
                 style=" height: 60px; font-size: large;">Add New Item to Inventory</button>
@@ -560,7 +562,7 @@ if (
                                 </div>
 
                                 <div class="form-group col-md-4">
-                                    <label for="srno">Serial Number & Bill Date</label>
+                                    <label for="srno">Bill Number & Bill Date</label>
                                     <div class="d-flex">
                                         <input type="number" class="form-control mr-2" id="srno" name="srno"
                                             placeholder="Enter Serial Number">
@@ -618,18 +620,18 @@ if (
 
         <!-- showing the table  -->
         <div class="container">
-            
+
             <table class="table table-bordered" id="myTable">
 
                 <thead>
                     <tr>
                         <th scope="col">S.No</th>
                         <th scope="col">Product Name</th>
-                        <th scope="col">Type/Register details</th>
+                        <th scope="col">Reg On</th>
                         <th scope="col">Reg Page/S.NO</th>
                         <th scope="col">Purchase Date</th>
                         <th scope="col">Got it From</th>
-                        <th scope="col">SRNO / Bill date</th>
+                        <th scope="col">Bill No / Date</th>
                         <th class="srno-td d-none" style="display: hidden;">'hidden for srno'</th>
                         <th class="billdate-td d-none" style="display: hidden;">' hidden for billdate'</th>
                         <th scope="col">Unit Price</th>
@@ -660,7 +662,8 @@ if (
                             <td>' . htmlspecialchars($row['got_it_from'], ENT_QUOTES, 'UTF-8') . '</td>
                             
                             <!-- Visible column for SRNO & Bill Date (Combined) -->
-                            <td><small>' . htmlspecialchars($row['srno'], ENT_QUOTES, 'UTF-8') . '<br>' . $bill_date_formatted . '</small></td>
+                            <td style="white-space: nowrap;">' . htmlspecialchars($row['srno'], ENT_QUOTES, 'UTF-8') . '<br>' . $bill_date_formatted . '</td>
+
 
                             <!-- Hidden columns for SRNO and Bill Date (For JavaScript use) -->
                             <td class="srno-td d-none">' . htmlspecialchars($row['srno'], ENT_QUOTES, 'UTF-8') . '</td>
@@ -672,7 +675,7 @@ if (
                             <td>
                                 <div style="display: flex; gap: 10px; align-items: center;">
                                     <button class="edit btn btn-sm btn-primary" id="' . $row['sno'] . '">Edit</button>
-                                    <button class="transfer btn btn-sm btn-primary" id="t' . $row['sno'] . '">Allocate</button>
+                                    <button class="transfer btn btn-sm btn-primary" id="t' . $row['sno'] . '">Intent</button>
                                 </div>
                             </td>
                         </tr>';

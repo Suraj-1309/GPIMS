@@ -1,5 +1,6 @@
 
 <style>
+
   .sidebar form input[type="submit"] {
     width: 100%;
     text-align: left;
@@ -219,6 +220,10 @@
         width: 90%;
         margin: auto;
       }
+
+      #logout{
+        background-color: red;
+      }
     }
 
 
@@ -295,8 +300,12 @@
 
     <style>
         #logout{
-            background-color: red;
+            font-size: 900;
         }
+        #logout:hover{
+          background-color: red;
+        }
+
     </style>
     <!-- links from bottom -->
     <div class="bottom-links"  >
