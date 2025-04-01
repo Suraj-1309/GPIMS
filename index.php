@@ -385,11 +385,11 @@ if (isset($_SESSION['popup_message'])) {
         <a href="mailto:surajsinghch2055@gamil.com" title="Email"
           style="display: inline-flex; align-items: center; text-decoration: none; color: inherit;">
           <!-- Email SVG Icon -->
-          <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" width="32" height="32" viewBox="0 0 24 24">
+          <!-- <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" width="32" height="32" viewBox="0 0 24 24">
             <path
               d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5v-2l8 5 8-5v2z" />
-          </svg>
-          <span style="margin-left: 10px;">surajsinghch2055@gamil.com</span>
+          </svg> -->
+          <!-- <span style="margin-left: 10px;">surajsinghch2055@gamil.com</span> -->
         </a>
       </div>
       <div class="social-links" style="margin-top: 15px;">

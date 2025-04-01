@@ -479,13 +479,24 @@ if (
             </div>
         </div>
 
+        <style>
+/* Responsive styling for smaller screens */
+@media (max-width: 767px) {
+  #button {
+    width: 100%; /* Adjust width to 80% of the screen */
+  }
+  #button .add {
+    width: 100%; /* Correctly targets the button element */
+  }
+}
 
+        </style>
 
         <!-- Add Admin Button -->
-        <div class="container my-4">
+        <div class="container my-4" id="button" >
             <!-- Add Item Button -->
-            <button type="button" class="add btn btn-sm btn-primary" data-toggle="modal" data-target="#addItemModal"
-                style="width: 25%; height: 60px; font-size: large;">Add New Item to Inventory</button>
+            <button type="button" class="add btn btn-s btn-primary" data-toggle="modal" data-target="#addItemModal"
+                style=" height: 60px; font-size: large;">Add New Item to Inventory</button>
 
         </div>
 
@@ -772,10 +783,15 @@ if (
 
     <script>
         $(document).ready(function () {
-            $('#myTable').DataTable({
-            });
-        });
+            var dtOptions = {};
+            // Check if the viewport width is 767px or less (mobile)
+            if ($(window).width() <= 767) {
+                dtOptions.lengthChange = false;
+            }
 
+            // Initialize DataTable with the options
+            $('#myTable').DataTable(dtOptions);
+        });
 
     </script>
     <!-- JavaScript to Populate Branch & Lab Dropdown -->
