@@ -39,7 +39,24 @@ if (
     <?php include "components/sidebar.php" ?>
 
 
+    <style>
+        @media (max-width: 767px) {
+            
+            h2{ 
+                text-align: left;
+                margin-left: -27px;
+                font-size: x-large;
+                font-weight: 900;
+                padding-top: 5%;
+                padding-bottom: -2%;
+                margin-bottom: -4%;
+            }
+        }
+    </style>
     <div id="admin" class="right">
+        <div class="p-3 ml-5 pl-4">
+            <h2 class="pr-0 py-4">Available Stock Of College</h2>
+        </div>
 
         <!-- logic to add new admin -->
         <?php
@@ -48,7 +65,7 @@ if (
 
         <div class="container">
             <table class="table table-bordered" id="myTable">
-                <h3 class="pr-0 py-4">Available Stock Of College</h3>
+
                 <thead>
                     <tr>
                         <th scope="col">S.No</th>
@@ -105,11 +122,16 @@ if (
     <script src="//cdn.datatables.net/2.2.2/js/dataTables.min.js"></script>
 
     <script>
-        $(document).ready(function () {
-            $('#myTable').DataTable({
-            });
-        });
+         $(document).ready(function () {
+            var dtOptions = {};
+            // Check if the viewport width is 767px or less (mobile)
+            if ($(window).width() <= 767) {
+                dtOptions.lengthChange = false;
+            }
 
+            // Initialize DataTable with the options
+            $('#myTable').DataTable(dtOptions);
+        });
     </script>
 
 
