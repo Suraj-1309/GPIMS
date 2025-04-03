@@ -47,9 +47,15 @@ $lab = $_SESSION['lab'];
 
     <div id="admin" class="right">
         <div class="p-3 ml-5 pl-4">
-        <h2>Allocated Items to Branches</h2>   
-    </div>
+            <h2>Allocated Items to Lab</h2>
+        </div>
         <style>
+            h2 {
+                padding-top: 2%;
+                padding-left: 2%;
+                margin-bottom: -2%;
+            }
+
             @media (max-width: 767px) {
 
                 h2 {
@@ -158,7 +164,7 @@ $lab = $_SESSION['lab'];
                     // Get 'current_condition' from the modal (via POST).
                     $current_condition = mysqli_real_escape_string($conn, $_POST['current_condition']);
 
-                    
+
                     // Insert into rr_recevied_branch. Note: allotment_date will be defaulted by MySQL.
                     $insert_sql2 = "INSERT INTO rr_recevied_branch 
                             (product_name, `type`, got_it_from, current_condition, rr_reg, branch, lab, unit_price, units)
