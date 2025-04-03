@@ -46,6 +46,22 @@ $name = $_SESSION['name'];
 
     <div id="admin" class="right">
 
+    <div class="p-3 ml-5 pl-4">
+            <h2>Allotment Requests</h2>
+        </div>
+        <style>
+            @media (max-width: 767px) {
+
+                h2 {
+                    text-align: left;
+                    margin-left: -27px;
+                    font-size: x-large;
+                    font-weight: 900;
+                    padding-top: 5%;
+                }
+            }
+        </style>
+
         <?php
         if (isset($_SESSION['message'])) {
             echo '<div class="alert alert-' . $_SESSION['message_type'] . ' alert-dismissible fade show" role="alert">
@@ -140,7 +156,7 @@ $name = $_SESSION['name'];
 
 
         <div class="container mt-4">
-            <h2>Allotment Requests</h2>
+            
             <!-- Table -->
             <table class="table table-bordered" id="myTable">
                 <thead>
@@ -272,9 +288,16 @@ $name = $_SESSION['name'];
     <script src="//cdn.datatables.net/2.2.2/js/dataTables.min.js"></script>
     <script>
         $(document).ready(function () {
-            $('#myTable').DataTable();
+            var dtOptions = {};
+            // Check if the viewport width is 767px or less (mobile)
+            if ($(window).width() <= 767) {
+                dtOptions.lengthChange = false;
+            }
 
+            // Initialize DataTable with the options
+            $('#myTable').DataTable(dtOptions);
         });
+
     </script>
 
 </body>
