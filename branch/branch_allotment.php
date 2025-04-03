@@ -46,6 +46,24 @@ $lab = $_SESSION['lab'];
 
 
     <div id="admin" class="right">
+        <div class="p-3 ml-5 pl-4">
+        <h2>Allocated Items to Branches</h2>   
+    </div>
+        <style>
+            @media (max-width: 767px) {
+
+                h2 {
+                    text-align: left;
+                    margin-left: -27px;
+                    font-size: x-large;
+                    font-weight: 900;
+                    padding-top: 5%;
+                    margin-bottom: -5%;
+                    padding-bottom: -5%;
+                }
+            }
+        </style>
+
         <?php
         include "../_dbconnect.php";
         ?>
@@ -204,7 +222,6 @@ $lab = $_SESSION['lab'];
         ?>
 
         <div class="container mt-4">
-            <h2>Allocated Items to Branches</h2>
             <!-- Table (Example) -->
             <table class="table table-bordered" id="myTable">
                 <thead>
@@ -382,9 +399,18 @@ $lab = $_SESSION['lab'];
     <script src="//cdn.datatables.net/2.2.2/js/dataTables.min.js"></script>
     <script>
         $(document).ready(function () {
-            $('#myTable').DataTable();
+            var dtOptions = {};
+            // Check if the viewport width is 767px or less (mobile)
+            if ($(window).width() <= 767) {
+                dtOptions.lengthChange = false;
+            }
+
+            // Initialize DataTable with the options
+            $('#myTable').DataTable(dtOptions);
         });
+
     </script>
+
 
     <!-- jQuery code to handle the modal chain -->
     <script>
