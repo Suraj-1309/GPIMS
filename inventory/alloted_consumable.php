@@ -1,20 +1,24 @@
 <?php
 ob_start();
 session_start();
+
+// First, make sure the user is logged in
 if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== true) {
     header("Location: ../index.php");
     exit();
 }
 if (
-    !isset($_SESSION['branch']) || !isset($_SESSION['lab']) ||
-    $_SESSION['branch'] !== 'INVENTORY' || $_SESSION['lab'] !== 'INVENTORY'
+    !(
+        (isset($_SESSION['branch'], $_SESSION['lab']) && $_SESSION['branch'] === 'INVENTORY' && $_SESSION['lab'] === 'INVENTORY')
+        ||
+        (isset($_SESSION['name']) && !empty($_SESSION['name']))
+    )
 ) {
-    // Optionally, you could display an error message or log the attempt
     header("Location: ../index.php");
     exit();
 }
-?>
 
+?>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -50,6 +54,24 @@ if (
         <div class="p-3 ml-5 pl-4">
             <h2>Record of Alloted Consumable items</h2>
         </div>
+        <style>
+            h2{
+                padding-left: 1%;
+                margin-bottom: -1%;
+            }
+            @media (max-width: 767px) {
+
+                h2 {
+                    text-align: left;
+                    margin-left: -27px;
+                    font-size: x-large;
+                    font-weight: 900;
+                    padding-top: 5%;
+                    margin-bottom: -5%;
+                    padding-bottom: -5%;
+                }
+            }
+        </style>
         <!-- logic to add new admin -->
         <?php
         include "../_dbconnect.php";
@@ -109,12 +131,18 @@ if (
 
     <script>
         $(document).ready(function () {
-            $('#myTable').DataTable({
-            });
+            var dtOptions = {};
+            // Check if the viewport width is 767px or less (mobile)
+            if ($(window).width() <= 767) {
+                dtOptions.lengthChange = false;
+            }
+
+            // Initialize DataTable with the options
+            $('#myTable').DataTable(dtOptions);
         });
 
-
     </script>
+
 
 
 </body>
