@@ -237,6 +237,7 @@
 
 <!-- sidebar  -->
 <div class="sidebar">
+  <h4>Officer options</h4>
     <div>
         <ul class="nav flex-column">
             <li class="nav-item nav-link bg-col  hover-class">

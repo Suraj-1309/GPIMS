@@ -1,18 +1,23 @@
 <?php
-
 ob_start();
 session_start();
+
+// First, make sure the user is logged in
 if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== true) {
     header("Location: ../index.php");
     exit();
 }
 if (
-    !isset($_SESSION['branch']) || !isset($_SESSION['lab']) ||
-    $_SESSION['branch'] !== 'INVENTORY' || $_SESSION['lab'] !== 'INVENTORY'
+    !(
+        (isset($_SESSION['branch'], $_SESSION['lab']) && $_SESSION['branch'] === 'INVENTORY' && $_SESSION['lab'] === 'INVENTORY')
+        ||
+        (isset($_SESSION['name']) && !empty($_SESSION['name']))
+    )
 ) {
     header("Location: ../index.php");
     exit();
 }
+
 ?>
 
 <!DOCTYPE html>
@@ -45,9 +50,24 @@ if (
     <!-- sidebar  -->
     <?php include "components/sidebar.php" ?>
 
+
     <div id="admin" class="right">
 
+        <div class="p-3 ml-5 pl-4">
+            <h2>Rejected Allotment Requests</h2>
+        </div>
+        <style>
+            @media (max-width: 767px) {
 
+                h2 {
+                    text-align: left;
+                    margin-left: -27px;
+                    font-size: x-large;
+                    font-weight: 900;
+                    padding-top: 5%;
+                }
+            }
+        </style>
         <?php
         include "../_dbconnect.php";
 
@@ -85,8 +105,7 @@ if (
                         $_SESSION['popup_message'] = 'Error moving item to allotment.';
                         $_SESSION['popup_type'] = 'danger';
                     }
-                } 
-                elseif ($action === 'reject') {
+                } elseif ($action === 'reject') {
                     // Reject: Move item to inventory and remove from allotment_reject
                     $product_name = $row['product_name'];
                     $type = $row['type'];
@@ -141,7 +160,7 @@ if (
 
 
         <div class="container">
-            <h3 class="pb-2 pt-4">Rejected Allotment Requests</h3>
+
             <table class="table table-bordered" id="myTable">
                 <thead>
                     <tr>
@@ -178,8 +197,8 @@ if (
                                 <td>' . $row['reason'] . '</td>
                                 <td>
                                     <div style="display: flex; gap: 10px; align-items: center;">
-                                    <button class="btn btn-success accept-button" data-sno="' . $row['sno'] . '" data-toggle="modal" data-target="#acceptModal">Accept</button>
-                                    <button class="btn btn-danger reject-button" data-sno="' . $row['sno'] . '" data-toggle="modal" data-target="#rejectModal">Reject</button>
+                                    <button class="btn btn-success accept-button" data-sno="' . $row['sno'] . '" data-toggle="modal" data-target="#acceptModal">Request Again</button>
+                                    <button class="btn btn-danger reject-button" data-sno="' . $row['sno'] . '" data-toggle="modal" data-target="#rejectModal">Add Back</button>
                                 </div>
                                 </td>
                             </tr>';
@@ -269,9 +288,16 @@ if (
     <script src="//cdn.datatables.net/2.2.2/js/dataTables.min.js"></script>
     <script>
         $(document).ready(function () {
-            $('#myTable').DataTable();
+            var dtOptions = {};
+            // Check if the viewport width is 767px or less (mobile)
+            if ($(window).width() <= 767) {
+                dtOptions.lengthChange = false;
+            }
 
+            // Initialize DataTable with the options
+            $('#myTable').DataTable(dtOptions);
         });
+
     </script>
 </body>
 
