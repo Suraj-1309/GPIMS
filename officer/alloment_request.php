@@ -42,6 +42,21 @@ if (
 
 
     <div id="admin" class="right">
+        <div class="p-3 ml-5 pl-4">
+            <h2>Allotment Requests</h2>
+        </div>
+        <style>
+            @media (max-width: 767px) {
+
+                h2 {
+                    text-align: left;
+                    margin-left: -27px;
+                    font-size: x-large;
+                    font-weight: 900;
+                    padding-top: 5%;
+                }
+            }
+        </style>
 
         <!-- logic to add new admin -->
         <?php
@@ -69,9 +84,7 @@ if (
                         $_SESSION['popup_message'] = 'Error updating item permission.';
                         $_SESSION['popup_type'] = 'danger';
                     }
-                } 
-
-                elseif ($action === 'reject') {
+                } elseif ($action === 'reject') {
                     // For reject, get the reason from POST
                     $reason = isset($_POST['reason']) ? mysqli_real_escape_string($conn, $_POST['reason']) : '';
 
@@ -114,7 +127,6 @@ if (
         ?>
 
         <div class="container mt-4">
-            <h2>Allotment Requests</h2>
             <!-- Table -->
             <table class="table table-bordered" id="myTable">
                 <thead>
@@ -174,7 +186,7 @@ if (
                             Are you sure you want to accept this item?
                         </div>
                         <div class="modal-footer">
-                            <form id="acceptForm" method="POST" action="<?php $_SERVER['PHP_SELF'];?>">
+                            <form id="acceptForm" method="POST" action="<?php $_SERVER['PHP_SELF']; ?>">
                                 <input type="hidden" name="sno" id="hiddenAcceptSno">
                                 <!-- Hidden action field to differentiate accept -->
                                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
@@ -198,7 +210,7 @@ if (
                             </button>
                         </div>
                         <div class="modal-body">
-                            <form id="rejectForm" method="POST" action="<?php $_SERVER['PHP_SELF'];?>">
+                            <form id="rejectForm" method="POST" action="<?php $_SERVER['PHP_SELF']; ?>">
                                 <input type="hidden" name="sno" id="hiddenRejectSno">
                                 <!-- Add a textarea for rejection reason -->
                                 <div class="form-group">
@@ -218,9 +230,9 @@ if (
                 </div>
             </div>
         </div>
-        
-         <!-- JavaScript to populate hidden field for Accept and Reject Modals -->
-         <script>
+
+        <!-- JavaScript to populate hidden field for Accept and Reject Modals -->
+        <script>
             document.querySelectorAll('.accept-button').forEach(button => {
                 button.addEventListener('click', function () {
                     let selectedAcceptSno = this.getAttribute('data-sno');
@@ -247,8 +259,14 @@ if (
 
     <script>
         $(document).ready(function () {
-            $('#myTable').DataTable({
-            });
+            var dtOptions = {};
+            // Check if the viewport width is 767px or less (mobile)
+            if ($(window).width() <= 767) {
+                dtOptions.lengthChange = false;
+            }
+
+            // Initialize DataTable with the options
+            $('#myTable').DataTable(dtOptions);
         });
 
     </script>
