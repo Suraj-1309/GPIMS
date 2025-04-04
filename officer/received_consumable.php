@@ -44,6 +44,31 @@ if (
 
     <div id="admin" class="right">
 
+    <div class="p-3 ml-5 pl-4">
+            <h2>RR Register Record of Consumable items</h2>
+        </div>
+        <!-- logic to add new admin -->
+        <?php
+        include "../_dbconnect.php";
+        ?>
+
+        <style>
+            h2{
+                padding-top: 1%;
+                padding-left: 1.5%;
+                margin-bottom: -1%;
+            }
+            @media (max-width: 767px) {
+
+                h2 {
+                    text-align: left;
+                    margin-left: -27px;
+                    font-size: x-large;
+                    font-weight: 900;
+                    padding-top: 5%;
+                }
+            }
+        </style>
         <!-- logic to add new admin -->
         <?php
         include "../_dbconnect.php";
@@ -107,8 +132,14 @@ if (
 
     <script>
         $(document).ready(function () {
-            $('#myTable').DataTable({
-            });
+            var dtOptions = {};
+            // Check if the viewport width is 767px or less (mobile)
+            if ($(window).width() <= 767) {
+                dtOptions.lengthChange = false;
+            }
+
+            // Initialize DataTable with the options
+            $('#myTable').DataTable(dtOptions);
         });
 
     </script>

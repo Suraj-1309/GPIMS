@@ -276,12 +276,10 @@
                 <div class="collapse" id="alloteRRDropdown">
                     <ul class="list-unstyled ml-3">
                         <li class="nav-item">
-                            <a class="nav-link hover-class" href="#itemAllotment"
-                                onclick="showContent('itemAllotment')">T&P RR Reg</a>
+                            <a class="nav-link hover-class" href="alloted_t&p.php">T&P RR Reg</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link hover-class" href="#inventoryItemReturn"
-                                onclick="showContent('inventoryItemReturn')">Consumable RR Reg</a>
+                            <a class="nav-link hover-class" href="alloted_consumable.php">Consumable RR Reg</a>
                         </li>
                     </ul>
                 </div>
