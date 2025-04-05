@@ -110,64 +110,82 @@ if (
         }
         ?>
 
-<?php
-// Handle Accept Button Click - Grant Permission to Stock Officer
-if ($_SERVER['REQUEST_METHOD'] == "POST") {
-    if (isset($_POST['snoAccept'])) {
+        <?php
+        // Handle Accept Button Click - Grant Permission to Stock Officer
+        if ($_SERVER['REQUEST_METHOD'] == "POST") {
+            if (isset($_POST['snoAccept'])) {
 
-        $snoAccept = $_POST['snoAccept'];
+                $snoAccept = $_POST['snoAccept'];
 
-        // Update the 'approved_by' or 'assigned_to' field to 'Stock Officer'
-        $sql_update_permission = "UPDATE return_request SET permission = 'Stock Officer' WHERE sno = '$snoAccept'";
-        $result_update_permission = mysqli_query($conn, $sql_update_permission);
+                // Update the 'approved_by' or 'assigned_to' field to 'Stock Officer'
+                $sql_update_permission = "UPDATE return_request SET permission = 'Stock Officer' WHERE sno = '$snoAccept'";
+                $result_update_permission = mysqli_query($conn, $sql_update_permission);
 
-        if ($result_update_permission) {
-            $_SESSION['popup_message'] = "Permission granted to Stock Officer.";
-            $_SESSION['popup_type'] = "success";
-        } else {
-            $_SESSION['popup_message'] = "Error granting permission.";
-            $_SESSION['popup_type'] = "danger";
+                if ($result_update_permission) {
+                    $_SESSION['popup_message'] = "Permission granted to Stock Officer.";
+                    $_SESSION['popup_type'] = "success";
+                } else {
+                    $_SESSION['popup_message'] = "Error granting permission.";
+                    $_SESSION['popup_type'] = "danger";
+                }
+
+                // Redirect back to the page
+                header("Location: " . $_SERVER['PHP_SELF']);
+                exit();
+            }
         }
 
-        // Redirect back to the page
-        header("Location: " . $_SERVER['PHP_SELF']);
-        exit();
-    }
-}
+        ?>
 
-?>
-
-<!-- Accept Confirmation Modal -->
-<div class="modal fade" id="acceptModal" tabindex="-1" role="dialog" aria-labelledby="acceptModalLabel" aria-hidden="true">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="acceptModalLabel">Confirm Return Request</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            <div class="modal-body">
-                <p>Are you sure you want to send this return request for approval?</p>
-            </div>
-            <div class="modal-footer">
-                <form action="<?php echo $_SERVER['PHP_SELF']; ?>" method="POST">
-                    <input type="hidden" name="snoAccept" id="snoAccept">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
-                    <button type="submit" class="btn btn-success">Accept </button>
-                </form>
+        <!-- Accept Confirmation Modal -->
+        <div class="modal fade" id="acceptModal" tabindex="-1" role="dialog" aria-labelledby="acceptModalLabel"
+            aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="acceptModalLabel">Confirm Return Request</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <p>Are you sure you want to send this return request for approval?</p>
+                    </div>
+                    <div class="modal-footer">
+                        <form action="<?php echo $_SERVER['PHP_SELF']; ?>" method="POST">
+                            <input type="hidden" name="snoAccept" id="snoAccept">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                            <button type="submit" class="btn btn-success">Accept </button>
+                        </form>
+                    </div>
+                </div>
             </div>
         </div>
-    </div>
-</div>
 
-
-
-        <!-- Add item to branch Form -->
-        <div class="container my-4">
-            <h3>Request To Return Items</h3>
+        <div class="p-3 ml-5 pl-4">
+        <h2>Request To Return Items</h2>
         </div>
+        <style>
+            h2 {
+                padding-top: 2%;
+                padding-left: 2%;
+                margin-bottom: -2%;
+            }
 
+            @media (max-width: 767px) {
+
+                h2 {
+                    text-align: left;
+                    margin-left: -27px;
+                    font-size: x-large;
+                    font-weight: 900;
+                    padding-top: 0%;
+                    margin-bottom: -5%;
+                    padding-bottom: -5%;
+
+                }
+            }
+        </style>
 
         <div class="container">
             <table class="table table-bordered" id="myTable">
@@ -247,7 +265,7 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
                         <div class="modal-footer">
                             <!-- Buttons -->
                             <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
-                            <button id="confirmDeleteBtn" type="submit" class="btn btn-danger">Yes, Delete</button>
+                            <button id="confirmDeleteBtn" type="submit" class="btn btn-danger">Yes, Reject</button>
                         </div>
                     </form>
                     <!-- End Form -->
@@ -258,29 +276,29 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
     </div>
 
     <script>
-    document.addEventListener('DOMContentLoaded', function () {
-    // Accept Button Logic
-    let acceptButtons = document.querySelectorAll('button.accept');
-    Array.from(acceptButtons).forEach(function (button) {
-        button.addEventListener('click', function (e) {
-            e.stopPropagation();
-            console.log("Accept button clicked");
+        document.addEventListener('DOMContentLoaded', function () {
+            // Accept Button Logic
+            let acceptButtons = document.querySelectorAll('button.accept');
+            Array.from(acceptButtons).forEach(function (button) {
+                button.addEventListener('click', function (e) {
+                    e.stopPropagation();
+                    console.log("Accept button clicked");
 
-            // Get the row and its cells
-            let tr = e.target.closest('tr');
-            let tds = tr.getElementsByTagName('td');
+                    // Get the row and its cells
+                    let tr = e.target.closest('tr');
+                    let tds = tr.getElementsByTagName('td');
 
-            // Assuming the first column holds a unique identifier (adjust if needed)
-            let sno = e.target.id; // or tds[0].innerText if the ID is stored there
+                    // Assuming the first column holds a unique identifier (adjust if needed)
+                    let sno = e.target.id; // or tds[0].innerText if the ID is stored there
 
-            // Set the hidden input value in the modal form
-            document.getElementById('snoAccept').value = sno;
+                    // Set the hidden input value in the modal form
+                    document.getElementById('snoAccept').value = sno;
 
-            // Show the confirmation modal
-            $('#acceptModal').modal('show');
+                    // Show the confirmation modal
+                    $('#acceptModal').modal('show');
+                });
+            });
         });
-    });
-});
 
     </script>
 
@@ -295,9 +313,16 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
     <script src="//cdn.datatables.net/2.2.2/js/dataTables.min.js"></script>
     <script>
         $(document).ready(function () {
-            $('#myTable').DataTable();
+            var dtOptions = {};
+            // Check if the viewport width is 767px or less (mobile)
+            if ($(window).width() <= 767) {
+                dtOptions.lengthChange = false;
+            }
 
+            // Initialize DataTable with the options
+            $('#myTable').DataTable(dtOptions);
         });
+
     </script>
 
     <!-- JavaScript to handle the delete action -->
