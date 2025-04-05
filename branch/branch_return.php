@@ -52,6 +52,29 @@ $lab = $_SESSION['lab'];
 
     <div id="admin" class="right">
 
+        <div class="p-3 ml-5 pl-4">
+            <h2><?php echo $_SESSION['branch'] . " " . $_SESSION['lab'] ?> Return Items List</h2>
+        </div>
+        <style>
+            h2 {
+                padding-top: 2%;
+                padding-left: 1%;
+                margin-bottom: -1%;
+            }
+
+            @media (max-width: 767px) {
+
+                h2 {
+                    text-align: left;
+                    margin-left: -27px;
+                    font-size: x-large;
+                    font-weight: 900;
+                    padding-top: 5%;
+                    margin-bottom: -5%;
+                    padding-bottom: -5%;
+                }
+            }
+        </style>
         <!-- connect to database  -->
         <?php
         include "../_dbconnect.php";
@@ -60,32 +83,32 @@ $lab = $_SESSION['lab'];
 
         <!-- cancel button -->
         <?php
-        
+
         if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['sno'])) {
             // Get the return request ID from POST
             $sno = $_POST['sno'];
-            
+
             // Retrieve the record from the return_request table
             $query = "SELECT * FROM return_request WHERE sno = '$sno'";
             $result = mysqli_query($conn, $query);
-            
+
             if ($result && mysqli_num_rows($result) > 0) {
                 $row = mysqli_fetch_assoc($result);
-                
+
                 // Extract details from the return_request record
-                $product_name   = $row['product_name'];
-                $type           = $row['type'];
-                $rr_reg         = $row['rr_reg'];
-                $purchase_date  = $row['purchase_date'];
-                $got_it_from    = $row['got_it_from'];
-                $unit_price     = $row['unit_price'];
-                $returned_units = (int)$row['units'];
-                $branch         = $row['branch'];
-                $lab            = $row['lab'];
-                
+                $product_name = $row['product_name'];
+                $type = $row['type'];
+                $rr_reg = $row['rr_reg'];
+                $purchase_date = $row['purchase_date'];
+                $got_it_from = $row['got_it_from'];
+                $unit_price = $row['unit_price'];
+                $returned_units = (int) $row['units'];
+                $branch = $row['branch'];
+                $lab = $row['lab'];
+
                 // Calculate the overall price for the returned units
                 $overall_price = $unit_price * $returned_units;
-                
+
                 // Check if an identical record exists in branch_items,
                 // matching on product_name, type, rr_reg, branch, and lab.
                 $check_sql = "SELECT * FROM branch_items 
@@ -95,12 +118,12 @@ $lab = $_SESSION['lab'];
                                 AND branch = '$branch'
                                 AND lab = '$lab'";
                 $check_result = mysqli_query($conn, $check_sql);
-                
+
                 if ($check_result && mysqli_num_rows($check_result) > 0) {
                     // Found an existing record in branch_items: update its units and overall_price
                     $existing = mysqli_fetch_assoc($check_result);
-                    $new_units = (int)$existing['units'] + $returned_units;
-                    
+                    $new_units = (int) $existing['units'] + $returned_units;
+
                     $update_sql = "UPDATE branch_items 
                                    SET units = '$new_units' 
                                    WHERE sno = '" . $existing['sno'] . "'";
@@ -115,11 +138,11 @@ $lab = $_SESSION['lab'];
                                    ('$product_name', '$type', '$rr_reg', '$allotment_date', '$branch', '$lab', '$unit_price', '$returned_units', '$purchase_date', '$got_it_from')";
                     mysqli_query($conn, $insert_sql);
                 }
-                
+
                 // Delete the record from the return_request table
                 $delete_sql = "DELETE FROM return_request WHERE sno = '$sno'";
                 $delete_result = mysqli_query($conn, $delete_sql);
-                
+
                 if ($delete_result) {
                     $_SESSION['popup_message'] = 'Item successfully cancelled and returned to branch inventory.';
                     $_SESSION['popup_type'] = 'success';
@@ -131,18 +154,16 @@ $lab = $_SESSION['lab'];
                 $_SESSION['popup_message'] = 'Item not found.';
                 $_SESSION['popup_type'] = 'danger';
             }
-            
+
             header("Location: " . $_SERVER['PHP_SELF']);
             exit();
         }
         ?>
-        
+
 
 
         <!-- Add item to branch Form -->
-        <div class="container my-4">
-            <h3><?php echo $_SESSION['branch'] . " " . $_SESSION['lab'] ?> Return Items List</h3>
-        </div>
+
 
 
         <div class="container">
@@ -198,7 +219,7 @@ $lab = $_SESSION['lab'];
                 <div class="modal-content">
                     <!--  Head -->
                     <div class="modal-header">
-                        <h5 class="modal-title" id="deleteModalLabel">Delete Confirmation</h5>
+                        <h5 class="modal-title" id="deleteModalLabel">Cancel Confirmation</h5>
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                             <span>&times;</span>
                         </button>
@@ -206,7 +227,7 @@ $lab = $_SESSION['lab'];
 
                     <!-- Body -->
                     <div class="modal-body">
-                        Are you sure you want to delete this record?
+                        Are you sure you want to Cancel Return Request?
                     </div>
 
                     <!-- Footer -->
@@ -218,8 +239,8 @@ $lab = $_SESSION['lab'];
 
                             <!-- Buttons-->
                             <input type="hidden" name="action" value="delete">
-                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
-                            <button id="confirmDeleteBtn" type="submit" class="btn btn-danger">Yes, Delete</button>
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">No</button>
+                            <button id="confirmDeleteBtn" type="submit" class="btn btn-danger">Yes, Cancel</button>
                         </form>
                     </div>
                 </div>
@@ -238,9 +259,16 @@ $lab = $_SESSION['lab'];
     <script src="//cdn.datatables.net/2.2.2/js/dataTables.min.js"></script>
     <script>
         $(document).ready(function () {
-            $('#myTable').DataTable();
+            var dtOptions = {};
+            // Check if the viewport width is 767px or less (mobile)
+            if ($(window).width() <= 767) {
+                dtOptions.lengthChange = false;
+            }
 
+            // Initialize DataTable with the options
+            $('#myTable').DataTable(dtOptions);
         });
+
     </script>
 
 

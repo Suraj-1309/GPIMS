@@ -377,7 +377,7 @@ if ($_SERVER['REQUEST_METHOD'] == "POST" && isset($_POST['action']) && $_POST['a
                             <!-- Modal Footer -->
                             <div class="modal-footer">
                                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                                <button type="submit" class="btn btn-primary">Return Items</button>
+                                <button type="submit" class="btn btn-danger">Return Items</button>
                             </div>
                         </form>
 
