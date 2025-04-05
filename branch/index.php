@@ -60,6 +60,30 @@ $lab = $_SESSION['lab'];
 
     <div id="admin" class="right">
 
+        <div class="p-3 ml-5 pl-4">
+            <h2 class="mt-4"><?php echo "$_SESSION[branch] $_SESSION[lab] Current Consumable Stock"; ?></h2>
+        </div>
+        <style>
+            h2 {
+                padding-top: 2%;
+                padding-left: 2%;
+                margin-bottom: -2%;
+            }
+
+            @media (max-width: 767px) {
+
+                h2 {
+                    text-align: left;
+                    margin-left: -27px;
+                    font-size: x-large;
+                    font-weight: 900;
+                    padding-top: 0%;
+                    margin-bottom: -5%;
+                    padding-bottom: -5%;
+
+                }
+            }
+        </style>
         <!-- connect to database  -->
         <?php
         include "../_dbconnect.php";
@@ -68,64 +92,64 @@ $lab = $_SESSION['lab'];
         <!-- code to handle deprecate system -->
         <?php
 
-if ($_SERVER['REQUEST_METHOD'] == "POST" && isset($_POST['action']) && $_POST['action'] === 'deprecate') {
-    // Sanitize input values
-    $sno = mysqli_real_escape_string($conn, $_POST['sno']);
-    $deprecate_units = (int) $_POST['deprecate_units'];
-    $reason = mysqli_real_escape_string($conn, $_POST['reason']);
+        if ($_SERVER['REQUEST_METHOD'] == "POST" && isset($_POST['action']) && $_POST['action'] === 'deprecate') {
+            // Sanitize input values
+            $sno = mysqli_real_escape_string($conn, $_POST['sno']);
+            $deprecate_units = (int) $_POST['deprecate_units'];
+            $reason = mysqli_real_escape_string($conn, $_POST['reason']);
 
-    // Get the record from branch_items
-    $query = "SELECT * FROM branch_items WHERE sno = '$sno'";
-    $result = mysqli_query($conn, $query);
+            // Get the record from branch_items
+            $query = "SELECT * FROM branch_items WHERE sno = '$sno'";
+            $result = mysqli_query($conn, $query);
 
-    if ($result && mysqli_num_rows($result) > 0) {
-        $row = mysqli_fetch_assoc($result);
-        $current_units = (int) $row['units'];
+            if ($result && mysqli_num_rows($result) > 0) {
+                $row = mysqli_fetch_assoc($result);
+                $current_units = (int) $row['units'];
 
-        if ($deprecate_units > $current_units) {
-            $_SESSION['popup_message'] = "Error: Cannot deprecate more than available units.";
-            $_SESSION['popup_type'] = "danger";
-            header("Location: " . $_SERVER['PHP_SELF']);
-            exit();
-        }
+                if ($deprecate_units > $current_units) {
+                    $_SESSION['popup_message'] = "Error: Cannot deprecate more than available units.";
+                    $_SESSION['popup_type'] = "danger";
+                    header("Location: " . $_SERVER['PHP_SELF']);
+                    exit();
+                }
 
-        // Insert deprecated item into branch_deprecate
-        $insert_sql = "INSERT INTO branch_deprecate 
+                // Insert deprecated item into branch_deprecate
+                $insert_sql = "INSERT INTO branch_deprecate 
             (product_name, type, rr_reg, allotment_date, branch, lab, unit_price, units, purchase_date, got_it_from, reason , current_condition) 
             VALUES 
             ('{$row['product_name']}', '{$row['type']}', '{$row['rr_reg']}', '{$row['allotment_date']}', 
             '{$row['branch']}', '{$row['lab']}', '{$row['unit_price']}', '$deprecate_units', '{$row['purchase_date']}', 
             '{$row['got_it_from']}', '$reason' , '{$row['current_condition']}')";
-        $insert_result = mysqli_query($conn, $insert_sql);
+                $insert_result = mysqli_query($conn, $insert_sql);
 
-        if ($insert_result) {
-            if ($deprecate_units == $current_units) {
-                // If all units are deprecated, remove the item from branch_items
-                $delete_sql = "DELETE FROM branch_items WHERE sno = '$sno'";
-                mysqli_query($conn, $delete_sql);
+                if ($insert_result) {
+                    if ($deprecate_units == $current_units) {
+                        // If all units are deprecated, remove the item from branch_items
+                        $delete_sql = "DELETE FROM branch_items WHERE sno = '$sno'";
+                        mysqli_query($conn, $delete_sql);
+                    } else {
+                        // Otherwise, update the remaining units in branch_items
+                        $new_units = $current_units - $deprecate_units;
+                        $update_sql = "UPDATE branch_items SET units = '$new_units' WHERE sno = '$sno'";
+                        mysqli_query($conn, $update_sql);
+                    }
+
+                    $_SESSION['popup_message'] = "Item deprecated successfully.";
+                    $_SESSION['popup_type'] = "success";
+                } else {
+                    $_SESSION['popup_message'] = "Error: Failed to insert into deprecate table.";
+                    $_SESSION['popup_type'] = "danger";
+                }
             } else {
-                // Otherwise, update the remaining units in branch_items
-                $new_units = $current_units - $deprecate_units;
-                $update_sql = "UPDATE branch_items SET units = '$new_units' WHERE sno = '$sno'";
-                mysqli_query($conn, $update_sql);
+                $_SESSION['popup_message'] = "Error: Item not found.";
+                $_SESSION['popup_type'] = "danger";
             }
 
-            $_SESSION['popup_message'] = "Item deprecated successfully.";
-            $_SESSION['popup_type'] = "success";
-        } else {
-            $_SESSION['popup_message'] = "Error: Failed to insert into deprecate table.";
-            $_SESSION['popup_type'] = "danger";
+            // Redirect back
+            header("Location: " . $_SERVER['PHP_SELF']);
+            exit();
         }
-    } else {
-        $_SESSION['popup_message'] = "Error: Item not found.";
-        $_SESSION['popup_type'] = "danger";
-    }
-
-    // Redirect back
-    header("Location: " . $_SERVER['PHP_SELF']);
-    exit();
-}
-?>
+        ?>
 
         <?php
         // Transfer and  Edit logic
@@ -440,7 +464,6 @@ if ($_SERVER['REQUEST_METHOD'] == "POST" && isset($_POST['action']) && $_POST['a
 
 
         <div class="container">
-            <h3 class="mt-4"><?php echo "$_SESSION[branch] $_SESSION[lab] Current Consumable Stock"; ?></h3>
             <table class="table table-bordered" id="myTable">
                 <thead>
                     <tr>
@@ -492,10 +515,17 @@ if ($_SERVER['REQUEST_METHOD'] == "POST" && isset($_POST['action']) && $_POST['a
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
     <script src="//cdn.datatables.net/2.2.2/js/dataTables.min.js"></script>
     <script>
-        $(document).ready(function () {
-            $('#myTable').DataTable();
+          $(document).ready(function () {
+            var dtOptions = {};
+            // Check if the viewport width is 767px or less (mobile)
+            if ($(window).width() <= 767) {
+                dtOptions.lengthChange = false;
+            }
 
+            // Initialize DataTable with the options
+            $('#myTable').DataTable(dtOptions);
         });
+
     </script>
 
     <script>
