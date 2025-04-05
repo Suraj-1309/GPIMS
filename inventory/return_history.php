@@ -56,6 +56,20 @@ if (
         <div class="container my-4">
             <h3>Return Items Record</h3>
         </div>
+        <style>
+            @media (max-width: 767px) {
+
+                h3 {
+                    text-align: left;
+                    margin-left: 27px;
+                    font-size: x-large;
+                    font-weight: 900;
+                    padding-top: 5%;
+                    padding-bottom: -10%;
+                    margin-bottom: -2%;
+                }
+            }
+        </style>
 
 
         <div class="container">
@@ -109,8 +123,14 @@ if (
     <script src="//cdn.datatables.net/2.2.2/js/dataTables.min.js"></script>
     <script>
         $(document).ready(function () {
-            $('#myTable').DataTable();
+            var dtOptions = {};
+            // Check if the viewport width is 767px or less (mobile)
+            if ($(window).width() <= 767) {
+                dtOptions.lengthChange = false;
+            }
 
+            // Initialize DataTable with the options
+            $('#myTable').DataTable(dtOptions);
         });
     </script>
 </body>
