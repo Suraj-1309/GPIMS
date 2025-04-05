@@ -52,6 +52,29 @@ $lab = $_SESSION['lab'];
 
     <div id="admin" class="right">
 
+    <div class="p-3 ml-5 pl-4">
+            <h2 class="mt-4"><?php echo "$_SESSION[branch] $_SESSION[lab] Current T&P Stock"; ?></h2>
+        </div>
+        <style>
+            h2 {
+                padding-left: 1%;
+                padding-top: 1%;
+            }
+
+            @media (max-width: 767px) {
+
+                h2 {
+                    text-align: left;
+                    margin-left: -27px;
+                    font-size: x-large;
+                    font-weight: 900;
+                    padding-top: 0%;
+                    margin-bottom: -5%;
+                    padding-bottom: -5%;
+
+                }
+            }
+        </style>
         <!-- connect to database  -->
         <?php
         include "../_dbconnect.php";
@@ -349,7 +372,7 @@ $lab = $_SESSION['lab'];
                             <!-- Modal Footer -->
                             <div class="modal-footer">
                                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                                <button type="submit" class="btn btn-primary">Return Items</button>
+                                <button type="submit" class="btn btn-danger">Return Items</button>
                             </div>
                         </form>
 
@@ -412,7 +435,6 @@ $lab = $_SESSION['lab'];
 
 
         <div class="container">
-            <h3 class="mt-4"><?php echo "$_SESSION[branch] $_SESSION[lab] Current Consumable Stock"; ?></h3>
             <table class="table table-bordered" id="myTable">
                 <thead>
                     <tr>
@@ -443,7 +465,7 @@ $lab = $_SESSION['lab'];
                                 <td>' . $row['current_condition'] . '</td>
                                 <td>
                                     <div style="display: flex; gap: 10px; align-items: center;">
-                                        <button class="edit btn btn-sm btn-primary" id="' . $row['sno'] . '">Use</button>
+                                        <button class="edit btn btn-sm btn-primary" id="' . $row['sno'] . '">Condition</button>
                                         <button class="return btn btn-sm btn-primary" id="r' . $row['sno'] . '">Return</button>
                                         <button class="deprecate btn btn-sm btn-primary" id="d' . $row['sno'] . '">Deprecate</button>
                                     </div>
@@ -466,10 +488,17 @@ $lab = $_SESSION['lab'];
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
     <script src="//cdn.datatables.net/2.2.2/js/dataTables.min.js"></script>
     <script>
-        $(document).ready(function () {
-            $('#myTable').DataTable();
+         $(document).ready(function () {
+            var dtOptions = {};
+            // Check if the viewport width is 767px or less (mobile)
+            if ($(window).width() <= 767) {
+                dtOptions.lengthChange = false;
+            }
 
+            // Initialize DataTable with the options
+            $('#myTable').DataTable(dtOptions);
         });
+
     </script>
 
 

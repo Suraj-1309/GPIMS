@@ -50,6 +50,29 @@ $lab = $_SESSION['lab'];
     <?php include "components/sidebar.php" ?>
 
     <div id="admin" class="right">
+    <div class="p-3 ml-5 pl-4">
+            <h2 class="mt-4"><?php echo "$_SESSION[branch] $_SESSION[lab] Deprecated Stock"; ?></h2>
+        </div>
+        <style>
+            h2 {
+                padding-left: 1%;
+                margin-bottom: -1%;
+            }
+
+            @media (max-width: 767px) {
+
+                h2 {
+                    text-align: left;
+                    margin-left: -27px;
+                    font-size: x-large;
+                    font-weight: 900;
+                    padding-top: 0%;
+                    margin-bottom: -5%;
+                    padding-bottom: -5%;
+
+                }
+            }
+        </style>
 
         <!-- connect to database  -->
         <?php
@@ -359,7 +382,6 @@ $lab = $_SESSION['lab'];
 
 
         <div class="container">
-            <h3 class="mt-4"><?php echo "$_SESSION[branch] $_SESSION[lab] Current Consumable Stock"; ?></h3>
             <table class="table table-bordered" id="myTable">
                 <thead>
                     <tr>
@@ -395,7 +417,7 @@ $lab = $_SESSION['lab'];
                                 <td>
                                     <div style="display: flex; gap: 10px; align-items: center;">
                                         <button class="edit btn btn-sm btn-primary" id="' . $row['sno'] . '">Add Back</button>
-                                        <button class="return btn btn-sm btn-primary" id="r' . $row['sno'] . '">Return</button>
+                                        <button class="return btn btn-sm btn-primary" id="r' . $row['sno'] . '">Return Item</button>
                                     </div>
                                 </td>
                             </tr>';
@@ -417,9 +439,16 @@ $lab = $_SESSION['lab'];
     <script src="//cdn.datatables.net/2.2.2/js/dataTables.min.js"></script>
     <script>
         $(document).ready(function () {
-            $('#myTable').DataTable();
+            var dtOptions = {};
+            // Check if the viewport width is 767px or less (mobile)
+            if ($(window).width() <= 767) {
+                dtOptions.lengthChange = false;
+            }
 
+            // Initialize DataTable with the options
+            $('#myTable').DataTable(dtOptions);
         });
+
     </script>
 
     <script>
