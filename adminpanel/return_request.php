@@ -105,6 +105,8 @@ $name = $_SESSION['name'];
 
 
         <!-- // Handle Accept Button Click - Transfer Data, Update Inventory, and Delete Request -->
+
+
         <?php
         if ($_SERVER['REQUEST_METHOD'] == "POST") {
             if (isset($_POST['snoAccept'])) {
@@ -217,9 +219,6 @@ $name = $_SESSION['name'];
         }
         ?>
 
-
-
-
         <!-- Accept Confirmation Modal -->
         <div class="modal fade" id="acceptModal" tabindex="-1" role="dialog" aria-labelledby="acceptModalLabel"
             aria-hidden="true">
@@ -245,12 +244,31 @@ $name = $_SESSION['name'];
             </div>
         </div>
 
-
-
         <!-- Add item to branch Form -->
-        <div class="container my-4">
-            <h3>Request To Return Items</h3>
+        <div class="p-3 ml-5 pl-4">
+            <h2 class="mt-4">Request To Return Items</h2>
         </div>
+
+        <style>
+            h2 {
+                padding-left: 1%;
+                margin-bottom: -2%;
+            }
+
+            @media (max-width: 767px) {
+
+                h2 {
+                    text-align: left;
+                    margin-left: -27px;
+                    font-size: x-large;
+                    font-weight: 900;
+                    padding-top: 0%;
+                    margin-bottom: -5%;
+                    padding-bottom: -5%;
+
+                }
+            }
+        </style>
 
 
         <div class="container">
@@ -330,8 +348,8 @@ $name = $_SESSION['name'];
                         <!-- Footer -->
                         <div class="modal-footer">
                             <!-- Buttons -->
-                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
-                            <button id="confirmDeleteBtn" type="submit" class="btn btn-danger">Yes, Delete</button>
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">No</button>
+                            <button id="confirmDeleteBtn" type="submit" class="btn btn-danger">Yes, Cancel</button>
                         </div>
                     </form>
                     <!-- End Form -->
@@ -369,8 +387,6 @@ $name = $_SESSION['name'];
 
     </script>
 
-
-
     <script src="components/loginsuccess.js"></script>
     <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
@@ -378,8 +394,14 @@ $name = $_SESSION['name'];
     <script src="//cdn.datatables.net/2.2.2/js/dataTables.min.js"></script>
     <script>
         $(document).ready(function () {
-            $('#myTable').DataTable();
+            var dtOptions = {};
+            // Check if the viewport width is 767px or less (mobile)
+            if ($(window).width() <= 767) {
+                dtOptions.lengthChange = false;
+            }
 
+            // Initialize DataTable with the options
+            $('#myTable').DataTable(dtOptions);
         });
     </script>
 
