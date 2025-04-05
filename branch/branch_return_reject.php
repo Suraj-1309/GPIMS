@@ -214,74 +214,74 @@ $lab = $_SESSION['lab'];
 
 
             // 2. Transfer Functionality: Move item from return_request_cancel to return_request
-elseif (isset($_POST['snoReturn'])) {
-    $snoReturn = intval($_POST['snoReturn']);
-    // Reason for return is provided by the user in the modal
-    $reason = trim($_POST['reasonReturn'] ?? '');
-    // Return by the current user (from session)
-    $return_by = $_SESSION['name'] ?? '';
-    
-    // Fetch item details from return_request_cancel table
-    $query = "SELECT product_name, type, rr_reg, purchase_date, got_it_from, unit_price, overall_price, units, branch, lab, product_condition 
+            elseif (isset($_POST['snoReturn'])) {
+                $snoReturn = intval($_POST['snoReturn']);
+                // Reason for return is provided by the user in the modal
+                $reason = trim($_POST['reasonReturn'] ?? '');
+                // Return by the current user (from session)
+                $return_by = $_SESSION['name'] ?? '';
+
+                // Fetch item details from return_request_cancel table
+                $query = "SELECT product_name, type, rr_reg, purchase_date, got_it_from, unit_price, overall_price, units, branch, lab, product_condition 
               FROM return_request_cancel 
               WHERE sno = '$snoReturn'";
-    $result = mysqli_query($conn, $query);
-    
-    if ($result && mysqli_num_rows($result) > 0) {
-        $row = mysqli_fetch_assoc($result);
-        // Escape values for safety
-        $product_name     = mysqli_real_escape_string($conn, $row['product_name']);
-        $type             = mysqli_real_escape_string($conn, $row['type']);
-        $rr_reg           = mysqli_real_escape_string($conn, $row['rr_reg']);
-        $purchase_date    = mysqli_real_escape_string($conn, $row['purchase_date']);
-        $got_it_from      = mysqli_real_escape_string($conn, $row['got_it_from']);
-        $unit_price       = mysqli_real_escape_string($conn, $row['unit_price']);
-        $overall_price    = mysqli_real_escape_string($conn, $row['overall_price']);
-        $units            = (int)$row['units'];
-        $branch           = mysqli_real_escape_string($conn, $row['branch']);
-        $lab              = mysqli_real_escape_string($conn, $row['lab']);
-        $product_condition= mysqli_real_escape_string($conn, $row['product_condition']);
-    } else {
-        $_SESSION['popup_message'] = "Error: Could not retrieve item details.";
-        $_SESSION['popup_type'] = "danger";
-        header("Location: " . $_SERVER['PHP_SELF']);
-        exit();
-    }
-    
-    // Validate required fields (using values from the table and the form)
-    if ($product_name === '' || $branch === '' || $lab === '' || $reason === '') {
-        $_SESSION['popup_message'] = "Please fill in all required fields for return.";
-        $_SESSION['popup_type'] = "danger";
-        header("Location: " . $_SERVER['PHP_SELF']);
-        exit();
-    }
-    
-    // Set additional fields for return_request
-    $permission = "Stock Manager"; // Permission is hard-coded
-    // Insert data into return_request table.
-    // Fields in return_request: product_name, type, rr_reg, purchase_date, got_it_from, unit_price, overall_price, units, branch, lab, permission, product_condition, return_by, reason, return_date
-    $sql_insert_return = "INSERT INTO return_request 
+                $result = mysqli_query($conn, $query);
+
+                if ($result && mysqli_num_rows($result) > 0) {
+                    $row = mysqli_fetch_assoc($result);
+                    // Escape values for safety
+                    $product_name = mysqli_real_escape_string($conn, $row['product_name']);
+                    $type = mysqli_real_escape_string($conn, $row['type']);
+                    $rr_reg = mysqli_real_escape_string($conn, $row['rr_reg']);
+                    $purchase_date = mysqli_real_escape_string($conn, $row['purchase_date']);
+                    $got_it_from = mysqli_real_escape_string($conn, $row['got_it_from']);
+                    $unit_price = mysqli_real_escape_string($conn, $row['unit_price']);
+                    $overall_price = mysqli_real_escape_string($conn, $row['overall_price']);
+                    $units = (int) $row['units'];
+                    $branch = mysqli_real_escape_string($conn, $row['branch']);
+                    $lab = mysqli_real_escape_string($conn, $row['lab']);
+                    $product_condition = mysqli_real_escape_string($conn, $row['product_condition']);
+                } else {
+                    $_SESSION['popup_message'] = "Error: Could not retrieve item details.";
+                    $_SESSION['popup_type'] = "danger";
+                    header("Location: " . $_SERVER['PHP_SELF']);
+                    exit();
+                }
+
+                // Validate required fields (using values from the table and the form)
+                if ($product_name === '' || $branch === '' || $lab === '' || $reason === '') {
+                    $_SESSION['popup_message'] = "Please fill in all required fields for return.";
+                    $_SESSION['popup_type'] = "danger";
+                    header("Location: " . $_SERVER['PHP_SELF']);
+                    exit();
+                }
+
+                // Set additional fields for return_request
+                $permission = "Stock Manager"; // Permission is hard-coded
+                // Insert data into return_request table.
+                // Fields in return_request: product_name, type, rr_reg, purchase_date, got_it_from, unit_price, overall_price, units, branch, lab, permission, product_condition, return_by, reason, return_date
+                $sql_insert_return = "INSERT INTO return_request 
         (product_name, `type`, rr_reg, purchase_date, got_it_from, unit_price, overall_price, units, branch, lab, permission, product_condition, return_by, reason, return_date) 
         VALUES 
         ('$product_name', '$type', '$rr_reg', '$purchase_date', '$got_it_from', '$unit_price', '$overall_price', '$units', '$branch', '$lab', '$permission', '$product_condition', '$return_by', '$reason', CURDATE())";
-    $result_insert_return = mysqli_query($conn, $sql_insert_return);
-    
-    // Delete the processed record from return_request_cancel
-    $sql_delete_cancel = "DELETE FROM return_request_cancel WHERE sno = '$snoReturn'";
-    $result_delete_cancel = mysqli_query($conn, $sql_delete_cancel);
-    
-    // Check if both operations were successful
-    if ($result_insert_return && $result_delete_cancel) {
-        $_SESSION['popup_message'] = "Items transferred successfully!";
-        $_SESSION['popup_type'] = "success";
-    } else {
-        $_SESSION['popup_message'] = "Transfer failed: " . mysqli_error($conn);
-        $_SESSION['popup_type'] = "danger";
-    }
-    
-    header("Location: " . $_SERVER['PHP_SELF']);
-    exit();
-}
+                $result_insert_return = mysqli_query($conn, $sql_insert_return);
+
+                // Delete the processed record from return_request_cancel
+                $sql_delete_cancel = "DELETE FROM return_request_cancel WHERE sno = '$snoReturn'";
+                $result_delete_cancel = mysqli_query($conn, $sql_delete_cancel);
+
+                // Check if both operations were successful
+                if ($result_insert_return && $result_delete_cancel) {
+                    $_SESSION['popup_message'] = "Items transferred successfully!";
+                    $_SESSION['popup_type'] = "success";
+                } else {
+                    $_SESSION['popup_message'] = "Transfer failed: " . mysqli_error($conn);
+                    $_SESSION['popup_type'] = "danger";
+                }
+
+                header("Location: " . $_SERVER['PHP_SELF']);
+                exit();
+            }
 
 
         }
@@ -415,10 +415,30 @@ elseif (isset($_POST['snoReturn'])) {
 
 
         <!-- Add item to branch Form -->
-        <div class="container my-4">
-            <h3>Request To Return Items</h3>
+        <div class="p-3 ml-5 pl-4">
+            <h2>Request To Return Items</h2>
         </div>
+        <style>
+            h2 {
+                padding-top: 2%;
+                padding-left: 1%;
+                margin-bottom: -2%;
+            }
 
+            @media (max-width: 767px) {
+
+                h2 {
+                    text-align: left;
+                    margin-left: -27px;
+                    font-size: x-large;
+                    font-weight: 900;
+                    padding-top: 0%;
+                    margin-bottom: -5%;
+                    padding-bottom: -5%;
+
+                }
+            }
+        </style>
 
         <div class="container">
             <table class="table table-bordered" id="myTable">
@@ -529,8 +549,14 @@ elseif (isset($_POST['snoReturn'])) {
     <script src="//cdn.datatables.net/2.2.2/js/dataTables.min.js"></script>
     <script>
         $(document).ready(function () {
-            $('#myTable').DataTable();
+            var dtOptions = {};
+            // Check if the viewport width is 767px or less (mobile)
+            if ($(window).width() <= 767) {
+                dtOptions.lengthChange = false;
+            }
 
+            // Initialize DataTable with the options
+            $('#myTable').DataTable(dtOptions);
         });
     </script>
 
