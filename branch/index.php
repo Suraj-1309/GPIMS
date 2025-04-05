@@ -498,7 +498,6 @@ if ($_SERVER['REQUEST_METHOD'] == "POST" && isset($_POST['action']) && $_POST['a
         });
     </script>
 
-
     <script>
         document.addEventListener('DOMContentLoaded', function () {
             let deprecateButtons = document.querySelectorAll('button.deprecate');
