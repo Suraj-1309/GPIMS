@@ -40,6 +40,12 @@ if (
 
 
     <style>
+        h2{
+                padding-top: 2%;
+                padding-bottom: -5%;
+                padding-left: 1%;
+                margin-bottom: -2%;
+            }
         @media (max-width: 767px) {
             
             h2{ 

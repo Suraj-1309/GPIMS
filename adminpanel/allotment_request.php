@@ -50,6 +50,10 @@ $name = $_SESSION['name'];
             <h2>Allotment Requests</h2>
         </div>
         <style>
+            h2{
+                margin-bottom: -3%;
+                margin-left: -1%;
+            }
             @media (max-width: 767px) {
 
                 h2 {

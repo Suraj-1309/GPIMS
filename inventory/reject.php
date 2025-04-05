@@ -57,6 +57,12 @@ if (
             <h2>Rejected Allotment Requests</h2>
         </div>
         <style>
+            h2{
+                padding-left: 1%;
+                padding-top: 2%;
+                padding-bottom: -2%;
+                margin-bottom: -1%;
+            }
             @media (max-width: 767px) {
 
                 h2 {

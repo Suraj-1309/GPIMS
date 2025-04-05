@@ -251,7 +251,7 @@ $name = $_SESSION['name'];
 
         <style>
             h2 {
-                padding-left: 1%;
+                margin-left: -1%;
                 margin-bottom: -2%;
             }
 
