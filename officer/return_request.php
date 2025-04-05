@@ -31,8 +31,6 @@ if (
 
 <body>
 
-
-
     <?php include "components/popup.php" ?>
 
     <?php include "../adminpanel/components/navbar.php" ?>
@@ -135,8 +133,6 @@ if (
 
         ?>
 
-
-
         <!-- Accept Confirmation Modal -->
         <div class="modal fade" id="acceptModal" tabindex="-1" role="dialog" aria-labelledby="acceptModalLabel"
             aria-hidden="true">
@@ -163,9 +159,30 @@ if (
         </div>
 
         <!-- Add item to branch Form -->
-        <div class="container my-4">
-            <h3>Request To Return Items</h3>
+        <div class="p-3 ml-5 pl-4">
+            <h2 class="mt-4">Request To Return Items</h2>
         </div>
+
+        <style>
+            h2 {
+                padding-left: 1%;
+                margin-bottom: -2%;
+            }
+
+            @media (max-width: 767px) {
+
+                h2 {
+                    text-align: left;
+                    margin-left: -27px;
+                    font-size: x-large;
+                    font-weight: 900;
+                    padding-top: 0%;
+                    margin-bottom: -5%;
+                    padding-bottom: -5%;
+
+                }
+            }
+        </style>
 
         <div class="container">
             <table class="table table-bordered" id="myTable">
@@ -265,9 +282,15 @@ if (
     <script src="//cdn.datatables.net/2.2.2/js/dataTables.min.js"></script>
 
     <script>
-        $(document).ready(function () {
-            $('#myTable').DataTable({
-            });
+         $(document).ready(function () {
+            var dtOptions = {};
+            // Check if the viewport width is 767px or less (mobile)
+            if ($(window).width() <= 767) {
+                dtOptions.lengthChange = false;
+            }
+
+            // Initialize DataTable with the options
+            $('#myTable').DataTable(dtOptions);
         });
 
     </script>
@@ -313,9 +336,6 @@ if (
 
 
     </script>
-
-
-
 
 </body>
 
